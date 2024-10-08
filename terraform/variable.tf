@@ -24,14 +24,3 @@ variable "ami" {
   description = "AMI ID for the bastion host"
   type        = string
 }
-
-variable "docker_username" {
-  description = "Docker Hub username for pushing images"
-  type        = string
-}
-
-variable "docker_password" {
-  description = "Docker Hub password for pushing images"
-  type        = string
-  sensitive   = true  # This ensures the password is not displayed in the logs
-}

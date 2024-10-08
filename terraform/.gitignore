@@ -7,4 +7,3 @@ terraform.tfstate.backup
 # ignore state files
 *state*
 mykey.pem
-terraform.tfvars

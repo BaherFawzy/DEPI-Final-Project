@@ -6,42 +6,47 @@ pipeline {
                 git branch: 'main', credentialsId: 'Github', url: 'https://github.com/sharara99/DEPI-Final-Project.git'
             }
         }
-        
+
         stage('Build Infrastructure') {
-           steps {
-             script {
-              sh '''
-                cd terraform
-                ls -la  # Check contents of the terraform directory
-                terraform init
-                terraform apply -auto-approve -var-file="terraform.tfvars"
-                '''
-                echo 'Waiting for 3 minutes...'
-               sh 'sleep 180'  // Sleep for 180 seconds (3 minutes)
-        }
-    }
-}
-        
-        stage('Ansible for Configuration and Managment') {
             steps {
                 script {
                     sh '''
-                     ls -la  # Check contents of the ansible main directory
-                     ansible --version
-                     ansible-playbook -i inventory.ini ansible-playbook.yml
-                     '''
+                        cd terraform
+                        ls -la  # Check contents of the terraform directory
+                        terraform init
+                        terraform apply -auto-approve -var-file="terraform.tfvars"
+                    '''
+                    echo 'Waiting for 3 minutes...'
+                    sh 'sleep 180'  // Sleep for 180 seconds (3 minutes)
+                }
+            }
+        }
+
+        stage('Ansible for Configuration and Management') {
+            steps {
+                script {
+                    sh '''
+                        ls -la  # Check contents of the ansible main directory
+                        ansible --version
+                        ansible-playbook -i inventory.ini ansible-playbook.yml
+                    '''
                 }
             }
         }        
 
         stage('Build and Push Docker Image') {
-          steps {
-            script {
-            withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                sh "ansible-playbook -i /home/vm1/jenkins-slave/workspace/Final-Project/inventory.ini ansible-playbook.yml -e build_number=${BUILD_NUMBER}"
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        // Pass Docker credentials as environment variables to the Ansible playbook
+                        sh '''
+                            export DOCKER_USERNAME=${DOCKER_USERNAME}
+                            export DOCKER_PASSWORD=${DOCKER_PASSWORD}
+                            ansible-playbook -i /home/vm1/jenkins-slave/workspace/Final-Project/inventory.ini build-push-docker-image.yml -e build_number=${BUILD_NUMBER}
+                        '''
+                    }
+                }
             }
-          }
-         }
         }
 
         stage('Deploy') {

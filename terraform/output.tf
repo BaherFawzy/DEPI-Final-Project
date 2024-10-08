@@ -22,8 +22,7 @@ resource "null_resource" "generate_inventory" {
       ansible_user=ubuntu \
       ansible_ssh_private_key_file=/home/vm1/jenkins-slave/workspace/Final-Project/mykey.pem \
       ansible_ssh_common_args='-o StrictHostKeyChecking=no' \
-      docker_username=${var.docker_username} \
-      docker_password=${var.docker_password}" >> /home/vm1/jenkins-slave/workspace/Final-Project/inventory.ini
+
     EOF
   }
 }
