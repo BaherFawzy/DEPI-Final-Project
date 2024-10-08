@@ -8,7 +8,7 @@ metadata:
 spec:
   selector:
     app: to-do-app
-  type: NodePort
+  type: LoadBalancer  
   ports:
     - port: 3000
       targetPort: 3000 
