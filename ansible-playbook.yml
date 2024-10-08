@@ -1,0 +1,30 @@
+---
+- name: "Build with Ansible"
+  hosts: app_servers
+  become: true
+  vars:
+    docker_username: "your_dockerhub_username"  # Replace with your Docker Hub username
+    docker_password: "your_dockerhub_password"  # Replace with your Docker Hub password
+
+  tasks:
+    - name: clone repo
+      command: git clone https://github.com/abohmeed/getting-started-app.git
+      args:
+        chdir: /home/ubuntu
+      ignore_errors: yes
+
+    - name: Build image
+      command: docker build -t sharara99/to-do-app:latest .
+      args:
+        chdir: /home/ubuntu/getting-started-app
+      ignore_errors: yes  
+
+    - name: Login to Docker Hub
+      command: echo "{{ docker_password }}" | docker login -u "{{ docker_username }}" --password-stdin
+      ignore_errors: yes
+
+    - name: Push image
+      command: docker push sharara99/to-do-app:latest
+      args:
+        chdir: /home/ubuntu/getting-started-app
+      ignore_errors: yes
