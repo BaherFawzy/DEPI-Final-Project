@@ -14,7 +14,7 @@ pipeline {
                 cd terraform
                 ls -la  # Check contents of the terraform directory
                 terraform init
-                terraform apply -auto-approve
+                terraform apply -auto-approve -var-file="terraform.tfvars"
                 '''
                 echo 'Waiting for 3 minutes...'
                sh 'sleep 180'  // Sleep for 180 seconds (3 minutes)
