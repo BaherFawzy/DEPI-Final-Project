@@ -16,8 +16,8 @@ pipeline {
                         terraform init
                         terraform apply -auto-approve 
                     '''
-                    echo 'Waiting for 3 minutes...'
-                    sh 'sleep 180'  // Sleep for 180 seconds (3 minutes)
+                    echo 'Waiting for 2 minutes...'
+                    sh 'sleep 120'  // Sleep for 120 seconds (2 minutes)
                 }
             }
         }
@@ -49,11 +49,25 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    echo "Deploying on Kubernetes..."
-                    sh "kubectl apply -f flask-pod.yml"
+                    echo "Deploying to Kubernetes..."
+                    
+                    // Apply the Kubernetes namespace, service, and deployment YAML files
+                    sh '''
+                    kubectl apply -f k8s/namespace.yml
+                    kubectl apply -f k8s/service.yml
+                    kubectl apply -f k8s/deployment.yml
+                    '''
+
+                    // Wait for the deployment to be ready
+                    sh "kubectl rollout status deployment/node-app -n node-app"
+                    
+                    // Update the Kubernetes deployment with the new Docker image (rolling update)
+                    sh '''
+                    kubectl set image deployment/node-app node-app=sharara99/node-app:${BUILD_NUMBER} --record -n node-app
+                    '''
                 }
             }
         }
