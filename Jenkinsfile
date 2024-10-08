@@ -35,20 +35,14 @@ pipeline {
         }        
 
         stage('Build and Push Docker Image') {
-            steps {
-                script {
-                    sh "docker build -t sharara99/flask-app-pipeline:${BUILD_NUMBER} ."
-                    
-                    withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
-                        sh "docker login -u $DOCKER_USER -p $DOCKER_PASS"
-                    }
-                    
-                    sh "docker push sharara99/flask-app-pipeline:${BUILD_NUMBER}"
-                }
+          steps {
+            script {
+            withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                sh "ansible-playbook -i /home/vm1/jenkins-slave/workspace/Final-Project/inventory.ini ansible-playbook.yml -e build_number=${BUILD_NUMBER}"
             }
+          }
+         }
         }
-
-
 
         stage('Deploy') {
             steps {
