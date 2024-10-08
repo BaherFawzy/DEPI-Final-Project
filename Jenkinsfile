@@ -62,11 +62,11 @@ pipeline {
                     '''
 
                     // Wait for the deployment to be ready
-                    sh "kubectl rollout status deployment/node-app -n node-app"
+                    sh "kubectl rollout status deployment/to-do-app -n depi-project"
                     
                     // Update the Kubernetes deployment with the new Docker image (rolling update)
                     sh '''
-                    kubectl set image deployment/node-app node-app=sharara99/node-app:${BUILD_NUMBER} --record -n node-app
+                    kubectl set image deployment/to-do-app to-do-app=sharara99/to-do-app:${BUILD_NUMBER} --record -n depi-project
                     '''
                 }
             }
