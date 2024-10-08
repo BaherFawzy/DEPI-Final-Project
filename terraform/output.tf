@@ -9,7 +9,7 @@ output "ubuntu-instance_public_ip" {
 }
 
 output "instance_public_dns" {
-  value = aws_instance.ubuntu-instance.public_dns
+  value       = aws_instance.ubuntu-instance.public_dns
   description = "The public DNS of the bastion host"
 }
 

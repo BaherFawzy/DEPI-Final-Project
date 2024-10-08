@@ -1,9 +1,9 @@
 resource "aws_instance" "ubuntu-instance" {
-  ami                        = var.ami
-  instance_type             = var.instance_type
-  subnet_id                 = aws_subnet.subnet_public_1.id
-  key_name                  = aws_key_pair.UbuntuKP.key_name
-  vpc_security_group_ids    = [aws_security_group.UbuntuSG.id]
+  ami                    = var.ami
+  instance_type          = var.instance_type
+  subnet_id              = aws_subnet.subnet_public_1.id
+  key_name               = aws_key_pair.UbuntuKP.key_name
+  vpc_security_group_ids = [aws_security_group.UbuntuSG.id]
 
   # Enable public IP assignment
   associate_public_ip_address = true
