@@ -28,9 +28,9 @@
 
     - name: Tag and push Docker images
       shell: |
-        docker tag weather:latest sharara99/weather:{{ build_number }}
-        docker tag auth:latest sharara99/auth:{{ build_number }}
-        docker tag ui:latest sharara99/ui:{{ build_number }}
+        docker tag theweatherapp_weather:latest sharara99/weather:{{ build_number }}
+        docker tag theweatherapp_auth:latest sharara99/auth:{{ build_number }}
+        docker tag theweatherapp_ui:latest sharara99/ui:{{ build_number }}
         docker push sharara99/weather:{{ build_number }}
         docker push sharara99/auth:{{ build_number }}
         docker push sharara99/ui:{{ build_number }}
