@@ -28,12 +28,12 @@
 
     - name: Tag and push Docker images
       shell: |
-        docker tag weather:latest {{ docker_username }}/weather:{{ build_number }}
-        docker tag auth:latest {{ docker_username }}/auth:{{ build_number }}
-        docker tag ui:latest {{ docker_username }}/ui:{{ build_number }}
-        docker push {{ docker_username }}/weather:{{ build_number }}
-        docker push {{ docker_username }}/auth:{{ build_number }}
-        docker push {{ docker_username }}/ui:{{ build_number }}
+        docker tag weather:latest sharara99/weather:{{ build_number }}
+        docker tag auth:latest sharara99/auth:{{ build_number }}
+        docker tag ui:latest sharara99/ui:{{ build_number }}
+        docker push sharara99/weather:{{ build_number }}
+        docker push sharara99/auth:{{ build_number }}
+        docker push sharara99/ui:{{ build_number }}
       args:
         chdir: /home/ubuntu/theweatherapp
       ignore_errors: yes
