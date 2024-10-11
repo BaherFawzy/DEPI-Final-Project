@@ -16,8 +16,6 @@ pipeline {
                         terraform init
                         terraform apply -auto-approve 
                     '''
-                    echo 'Waiting for 2 minutes...'
-                    sh 'sleep 120'  // Sleep for 120 seconds (2 minutes)
                 }
             }
         }
@@ -32,7 +30,7 @@ pipeline {
                     '''
                 }
             }
-        }        
+        }
 
         stage('Build and Push Docker Image') {
             steps {
@@ -63,17 +61,22 @@ pipeline {
                     kubectl apply -f k8s/ui-deployment.yml
                     '''
 
-                    // Wait for the deployment to be ready
-                    sh "kubectl rollout status deployment/auth -n weatherapp"
-                    sh "kubectl rollout status deployment/weather -n weatherapp"
-                    sh "kubectl rollout status deployment/ui -n weatherapp"
+                    // Wait for the deployments to be fully rolled out with progress checks
+                    sh "kubectl rollout status deployment/auth -n weatherapp --timeout=120s"
+                    sh "kubectl rollout status deployment/weather -n weatherapp --timeout=120s"
+                    sh "kubectl rollout status deployment/ui -n weatherapp --timeout=120s"
                     
                     // Update the Kubernetes deployment with the new Docker image (rolling update)
                     sh '''
-                    kubectl set image deployment/auth auth=sharara99/auth-deployment:${BUILD_NUMBER} --record -n weatherapp
-                    kubectl set image deployment/weather weather=sharara99/weather-deployment:${BUILD_NUMBER} --record -n weatherapp
-                    kubectl set image deployment/ui ui=sharara99/ui-deployment:${BUILD_NUMBER} --record -n weatherapp
+                    kubectl set image deployment/auth auth=sharara99/auth:${BUILD_NUMBER} --record -n weatherapp
+                    kubectl set image deployment/weather weather=sharara99/weather:${BUILD_NUMBER} --record -n weatherapp
+                    kubectl set image deployment/ui ui=sharara99/ui:${BUILD_NUMBER} --record -n weatherapp
                     '''
+
+                    // Check rollout status after updating images
+                    sh "kubectl rollout status deployment/auth -n weatherapp --timeout=120s"
+                    sh "kubectl rollout status deployment/weather -n weatherapp --timeout=120s"
+                    sh "kubectl rollout status deployment/ui -n weatherapp --timeout=120s"
                 }
             }
         }
