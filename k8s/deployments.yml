@@ -15,12 +15,18 @@ spec:
     spec:
       containers:
       - name: auth
-        image: sharara99/auth:latest # Replace with your actual image
+        image: sharara99/auth:latest
         env:
         - name: DB_HOST
           value: "db"
+        - name: DB_PORT
+          value: "3306"          # Add port if required
+        - name: DB_USER
+          value: "root"          # Set your MySQL username
         - name: DB_PASSWORD
-          value: "my-secret-pw"
+          value: "my-secret-pw"  # Set your MySQL password
+        - name: DB_NAME
+          value: "my_database"    # Set your database name, if needed
 ---
 apiVersion: apps/v1
 kind: Deployment
