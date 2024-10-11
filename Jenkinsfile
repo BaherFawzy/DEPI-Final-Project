@@ -40,7 +40,7 @@ pipeline {
                         sh '''
                             export DOCKER_USERNAME=${DOCKER_USERNAME}
                             export DOCKER_PASSWORD=${DOCKER_PASSWORD}
-                            ansible-playbook -i inventory.ini ansible-playbook.yml -e build_number=${BUILD_NUMBER}
+                            ansible-playbook -i /home/vm1/jenkins-slave/workspace/Final-Project/inventory.ini ansible-playbook.yml -e build_number=${BUILD_NUMBER}
                         '''
                     }
                 }
