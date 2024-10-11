@@ -91,19 +91,9 @@ spec:
     spec:
       containers:
       - name: db
-        image: mysql:latest
+        image: sharara99/db:latest
         env:
         - name: MYSQL_ROOT_PASSWORD
           value: "my-secret-pw"
-        volumeMounts:
-        - name: db-data
-          mountPath: /var/lib/mysql
-        - name: mysql-init
-          mountPath: /docker-entrypoint-initdb.d
-      volumes:
-      - name: db-data
-        persistentVolumeClaim:
-          claimName: db-data
-      - name: mysql-init
-        hostPath:
-          path: ./mysql-init # Adjust path if necessary
+        ports:
+        - containerPort: 3306
