@@ -62,12 +62,7 @@ pipeline {
                     kubectl apply -f k8s/weather-deployment.yml
                     kubectl apply -f k8s/ui-deployment.yml
                     '''
-
-                    // Wait for the deployment to be ready
-                    sh "kubectl rollout status deployment/auth-deployment -n weatherapp"
-                    sh "kubectl rollout status deployment/weather-deployment -n weatherapp"
-                    sh "kubectl rollout status deployment/ui-deployment -n weatherapp"
-                    
+                   
                     // Update the Kubernetes deployment with the new Docker image (rolling update)
                     sh '''
                     kubectl set image deployment/auth-deployment auth-deployment=sharara99/auth-deployment:${BUILD_NUMBER} --record -n weatherapp
