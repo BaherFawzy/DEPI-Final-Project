@@ -64,20 +64,7 @@ pipeline {
                     sh "kubectl rollout status deployment/auth -n weatherapp --timeout=120s"
                     sh "kubectl rollout status deployment/weather -n weatherapp --timeout=120s"
                     sh "kubectl rollout status deployment/db -n weatherapp --timeout=120s"
-                                      
-                    // Update the Kubernetes deployment with the new Docker image (rolling update)
-                    sh '''
-                        kubectl set image deployment/auth auth=sharara99/auth:${BUILD_NUMBER} --record -n weatherapp
-                        kubectl set image deployment/weather weather=sharara99/weather:${BUILD_NUMBER} --record -n weatherapp
-                        kubectl set image deployment/ui ui=sharara99/ui:${BUILD_NUMBER} --record -n weatherapp
-                        kubectl set image deployment/db db=sharara99/db:${BUILD_NUMBER} --record -n weatherapp
-                    '''
 
-                    // Check rollout status after updating images
-                    sh "kubectl rollout status deployment/auth -n weatherapp --timeout=120s"
-                    sh "kubectl rollout status deployment/weather -n weatherapp --timeout=120s"
-                    sh "kubectl rollout status deployment/ui -n weatherapp --timeout=120s"
-                    sh "kubectl rollout status deployment/db -n weatherapp --timeout=120s"
                 }
             }
         }
