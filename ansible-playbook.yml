@@ -31,9 +31,11 @@
         docker tag theweatherapp_weather:latest sharara99/weather:{{ build_number }}
         docker tag theweatherapp_auth:latest sharara99/auth:{{ build_number }}
         docker tag theweatherapp_ui:latest sharara99/ui:{{ build_number }}
+        docker tag theweatherapp_db:latest sharara99/db:{{ build_number }}
         docker push sharara99/weather:{{ build_number }}
         docker push sharara99/auth:{{ build_number }}
         docker push sharara99/ui:{{ build_number }}
+        docker push sharara99/db:{{ build_number }}
       args:
         chdir: /home/ubuntu/theweatherapp
       ignore_errors: yes

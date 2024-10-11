@@ -1,30 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: weather
-  namespace: weatherapp
-spec:
-  type: NodePort
-  selector:
-    app: weather
-  ports:
-    - port: 8080           # Port that the service listens on
-      targetPort: 8080     # Port on the pod to forward traffic to
-      nodePort: 30080      # Static port on each node (can be assigned dynamically)
----
-apiVersion: v1
-kind: Service
-metadata:
   name: auth
   namespace: weatherapp
 spec:
-  type: NodePort
   selector:
     app: auth
   ports:
-    - port: 8081           # Port that the service listens on
-      targetPort: 8081     # Port on the pod to forward traffic to
-      nodePort: 30081      # Static port on each node (can be assigned dynamically)
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+
 ---
 apiVersion: v1
 kind: Service
@@ -32,10 +18,39 @@ metadata:
   name: ui
   namespace: weatherapp
 spec:
-  type: NodePort
   selector:
     app: ui
   ports:
-    - port: 80             # Port that the service listens on
-      targetPort: 80       # Port on the pod to forward traffic to
-      nodePort: 30082      # Static port on each node (can be assigned dynamically)
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000
+    nodePort: 30001 # Specify a NodePort within the range 30000-32767
+  type: NodePort # Expose the UI outside of the cluster
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: weather
+  namespace: weatherapp
+spec:
+  selector:
+    app: weather
+  ports:
+  - protocol: TCP
+    port: 5000
+    targetPort: 5000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: weatherapp
+spec:
+  selector:
+    app: db
+  ports:
+  - protocol: TCP
+    port: 3306
+    targetPort: 3306

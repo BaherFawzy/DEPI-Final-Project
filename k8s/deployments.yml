@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth
+  namespace: weatherapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+      - name: auth
+        image: sharara99/auth:latest # Replace with your actual image
+        env:
+        - name: DB_HOST
+          value: "db"
+        - name: DB_PASSWORD
+          value: "my-secret-pw"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui
+  namespace: weatherapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui
+  template:
+    metadata:
+      labels:
+        app: ui
+    spec:
+      containers:
+      - name: ui
+        image: sharara99/ui:latest # Replace with your actual image
+        env:
+        - name: AUTH_HOST
+          value: "auth"
+        - name: AUTH_PORT
+          value: "8080"
+        - name: WEATHER_HOST
+          value: "weather"
+        - name: WEATHER_PORT
+          value: "5000"
+        ports:
+        - containerPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather
+  namespace: weatherapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: weather
+  template:
+    metadata:
+      labels:
+        app: weather
+    spec:
+      containers:
+      - name: weather
+        image: sharara99/weather:latest # Replace with your actual image
+        env:
+        - name: APIKEY
+          value: "6d92c50bdamsh81137f3b87ace1fp1d53eejsnfe818b9dbc83"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  namespace: weatherapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+      - name: db
+        image: mysql:latest
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "my-secret-pw"
+        volumeMounts:
+        - name: db-data
+          mountPath: /var/lib/mysql
+        - name: mysql-init
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: db-data
+        persistentVolumeClaim:
+          claimName: db-data
+      - name: mysql-init
+        hostPath:
+          path: ./mysql-init # Adjust path if necessary
