@@ -1,5 +1,6 @@
 pipeline {
     agent { label 'worker' }
+
     stages {
         stage('Setup') {
             steps {
@@ -44,8 +45,7 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                         sh '''
-                            export DOCKER_USERNAME=${DOCKER_USERNAME}
-                            export DOCKER_PASSWORD=${DOCKER_PASSWORD}
+                            docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
                             ansible-playbook -i /home/vm1/jenkins-slave/workspace/Final-Project/inventory.ini ansible-playbook.yml -e build_number=${BUILD_NUMBER}
                         '''
                     }
@@ -56,18 +56,21 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    echo "Deploying to Kubernetes..."
+                    echo "Deploying to Kubernetes using Helm..."
 
+                    // Set variables directly in this stage
+                    def kubeNamespace = "to-do-app"
+                    def dockerImage = "sharara99/to-do-app"
+                    def helmReleaseName = "helm"
+                    def helmChartPath = "k8s/"  // Adjust this to the correct path of your Helm chart
+
+                    // Install or upgrade the Helm release
                     sh '''
-                        kubectl apply -f k8s/namespace.yml
-                        kubectl apply -f k8s/service.yml
-                        kubectl apply -f k8s/deployment.yml
-                    '''
-
-                    sh "kubectl rollout status deployment/to-do -n to-do-app --timeout=120s"
-
-                    sh '''
-                        kubectl set image deployment/to-do to-do-app=sharara99/to-do-app:${BUILD_NUMBER} --record -n to-do-app
+                        helm upgrade --install ${helmReleaseName} ${helmChartPath} \
+                        --namespace ${kubeNamespace} \
+                        --set image.repository=${dockerImage} \
+                        --set image.tag=${BUILD_NUMBER} \
+                        --set replicaCount=1
                     '''
                 }
             }
