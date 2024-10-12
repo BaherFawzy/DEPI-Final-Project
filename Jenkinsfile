@@ -4,7 +4,9 @@ pipeline {
     stages {
         stage('Setup') {
             steps {
-                git branch: 'main', credentialsId: 'Github', url: 'https://github.com/sharara99/DEPI-Final-Project.git'
+                script {
+                    git branch: 'main', credentialsId: 'Github', url: 'https://github.com/sharara99/DEPI-Final-Project.git'
+                }
             }
         }
 
@@ -32,7 +34,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        ls -la  # Check contents of the ansible main directory
+                        ls -la  # Check contents of the Ansible main directory
                         ansible --version
                         ansible-playbook -i inventory.ini ansible-playbook.yml
                     '''
@@ -57,27 +59,15 @@ pipeline {
             steps {
                 script {
                     echo "Deploying to Kubernetes using Helm..."
-                    // Upgrade the Helm release with the new image tag based on the build number
                     sh '''
                         helm upgrade --install helm k8s/helm \
                         --namespace to-do-app \
                         --set image.tag=${BUILD_NUMBER} \
-                        --set pramithous.image.tag=latest \  # Use latest or specify version
+                        --set pramithous.image.tag=latest \
                         --set grafana.image.tag=latest \
                         --set pramithous.enabled=true \
                         --set grafana.enabled=true \
                         --create-namespace
-                    '''
-                }
-            }
-        }
-        
-        stage('Check Helm Status') {
-            steps {
-                script {
-                    echo "Checking Helm release status..."
-                    sh '''
-                        helm status helm --namespace to-do-app
                     '''
                 }
             }
@@ -90,10 +80,6 @@ pipeline {
         }
         failure {
             echo 'Pipeline failed. Please check the logs for errors.'
-        }
-        cleanup {
-            echo 'Cleaning up...'
-            // Optionally add cleanup steps here if needed
         }
     }
 }
