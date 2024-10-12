@@ -46,7 +46,9 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                         sh '''
                             docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
-                            ansible-playbook -i /home/vm1/jenkins-slave/workspace/Final-Project/inventory.ini ansible-playbook.yml -e build_number=${BUILD_NUMBER}
+                            # Build and push the image with the build number
+                            docker build -t your-repo/your-image:${BUILD_NUMBER} .
+                            docker push your-repo/your-image:${BUILD_NUMBER}
                         '''
                     }
                 }
@@ -64,8 +66,8 @@ pipeline {
                             kubectl create namespace to-do-app
                         fi
 
-                        # Upgrade or install the Helm release
-                        helm upgrade --install helm k8s/helm --namespace to-do-app
+                        # Upgrade or install the Helm release with the build number
+                        helm upgrade --install helm k8s/helm --namespace to-do-app --set image.tag=${BUILD_NUMBER}
                     '''
                 }
             }
