@@ -1,32 +1,41 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth
+  name: auth-db
   namespace: weatherapp
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth
+      app: auth-db
   template:
     metadata:
       labels:
-        app: auth
+        app: auth-db
     spec:
       containers:
       - name: auth
         image: sharara99/auth:latest
         env:
         - name: DB_HOST
-          value: "db"
+          value: "localhost"  # db is now in the same pod
         - name: DB_PORT
-          value: "3306"          # Add port if required
+          value: "3306"
         - name: DB_USER
-          value: "root"          # Set your MySQL username
+          value: "root"
         - name: DB_PASSWORD
-          value: "my-secret-pw"  # Set your MySQL password
+          value: "my-secret-pw"
         - name: DB_NAME
-          value: "my_database"    # Set your database name, if needed
+          value: "my_database"
+        ports:
+        - containerPort: 8080
+      - name: db
+        image: sharara99/db:latest
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "my-secret-pw"
+        ports:
+        - containerPort: 3306
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -48,7 +57,7 @@ spec:
         image: sharara99/ui:latest # Replace with your actual image
         env:
         - name: AUTH_HOST
-          value: "auth"
+          value: "auth-db"  # Updated to reflect combined auth-db pod
         - name: AUTH_PORT
           value: "8080"
         - name: WEATHER_HOST
@@ -79,27 +88,3 @@ spec:
         env:
         - name: APIKEY
           value: "6d92c50bdamsh81137f3b87ace1fp1d53eejsnfe818b9dbc83"
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: db
-  namespace: weatherapp
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: db
-  template:
-    metadata:
-      labels:
-        app: db
-    spec:
-      containers:
-      - name: db
-        image: sharara99/db:latest
-        env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: "my-secret-pw"
-        ports:
-        - containerPort: 3306
