@@ -51,7 +51,7 @@ pipeline {
             steps {
                 script {
                     echo "Deploying to Kubernetes..."
-                    
+
                     // Apply the Kubernetes YAML files
                     sh '''
                         kubectl apply -f k8s/namespace.yml
@@ -61,23 +61,22 @@ pipeline {
                     '''
 
                     // Wait for the deployments to be fully rolled out with progress checks
-                    sh "kubectl rollout status deployment/auth -n weatherapp --timeout=120s"
+                    sh "kubectl rollout status deployment/auth-db -n weatherapp --timeout=120s"
                     sh "kubectl rollout status deployment/weather -n weatherapp --timeout=120s"
-                    sh "kubectl rollout status deployment/db -n weatherapp --timeout=120s"
-                                      
+                    sh "kubectl rollout status deployment/ui -n weatherapp --timeout=120s"
+                    
                     // Update the Kubernetes deployment with the new Docker image (rolling update)
                     sh '''
-                        kubectl set image deployment/auth auth=sharara99/auth:${BUILD_NUMBER} --record -n weatherapp
+                        kubectl set image deployment/auth-db auth=sharara99/auth:${BUILD_NUMBER} --record -n weatherapp
+                        kubectl set image deployment/auth-db db=sharara99/db:${BUILD_NUMBER} --record -n weatherapp
                         kubectl set image deployment/weather weather=sharara99/weather:${BUILD_NUMBER} --record -n weatherapp
                         kubectl set image deployment/ui ui=sharara99/ui:${BUILD_NUMBER} --record -n weatherapp
-                        kubectl set image deployment/db db=sharara99/db:${BUILD_NUMBER} --record -n weatherapp
                     '''
 
                     // Check rollout status after updating images
-                    sh "kubectl rollout status deployment/auth -n weatherapp --timeout=120s"
+                    sh "kubectl rollout status deployment/auth-db -n weatherapp --timeout=120s"
                     sh "kubectl rollout status deployment/weather -n weatherapp --timeout=120s"
                     sh "kubectl rollout status deployment/ui -n weatherapp --timeout=120s"
-                    sh "kubectl rollout status deployment/db -n weatherapp --timeout=120s"
                 }
             }
         }
@@ -86,7 +85,7 @@ pipeline {
     post {
         always {
             echo 'Cleaning up...'
-            // Add any necessary cleanup steps here, if needed
+            // Add any necessary cleanup steps here, if needed (e.g., removing test deployments)
         }
         success {
             echo 'Pipeline completed successfully!'
