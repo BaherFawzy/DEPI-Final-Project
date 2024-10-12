@@ -9,7 +9,7 @@
 
   tasks:
     - name: Clone repo
-      command: git clone https://github.com/abohmeed/theweatherapp.git
+      command: git clone https://github.com/abohmeed/getting-started-app.git
       args:
         chdir: /home/ubuntu
       ignore_errors: yes
@@ -19,24 +19,10 @@
         username: "{{ docker_username }}"
         password: "{{ docker_password }}"
 
-    - name: Build Docker images from docker-compose
+    - name: Build and push Docker images
       shell: |
-        docker-compose -f /home/ubuntu/theweatherapp/docker-compose.yaml build
+        docker build -t sharara99/to-do-list:{{ build_number }}
+        docker push sharara99/to-do-list:{{ build_number }}
       args:
-        chdir: /home/ubuntu/theweatherapp
-      ignore_errors: yes
-
-    - name: Tag and push Docker images
-      shell: |
-        docker compose up -d      
-        docker tag theweatherapp_weather:latest sharara99/weather:{{ build_number }}
-        docker tag theweatherapp_auth:latest sharara99/auth:{{ build_number }}
-        docker tag theweatherapp_ui:latest sharara99/ui:{{ build_number }}
-        docker tag mysql:latest sharara99/db:{{ build_number }}
-        docker push sharara99/weather:{{ build_number }}
-        docker push sharara99/auth:{{ build_number }}
-        docker push sharara99/ui:{{ build_number }}
-        docker push sharara99/db:{{ build_number }}
-      args:
-        chdir: /home/ubuntu/theweatherapp
+        chdir: /home/ubuntu/getting-started-app
       ignore_errors: yes
