@@ -88,7 +88,7 @@ pramithous:
   enabled: true
   image:
     repository: prom/prometheus  # Official Pramithous image
-    tag: latest  # Specify version if needed
+    tag: main  # Specify version if needed
   service:
     enabled: true
     port: 8080
