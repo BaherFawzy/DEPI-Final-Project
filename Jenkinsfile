@@ -62,11 +62,22 @@ pipeline {
                         helm upgrade --install helm k8s/helm \
                         --namespace to-do-app \
                         --set image.tag=${BUILD_NUMBER} \
-                        --set pramithous.image.tag=main \
+                        --set pramithous.image.tag=latest \  # Use latest or specify version
                         --set grafana.image.tag=latest \
                         --set pramithous.enabled=true \
                         --set grafana.enabled=true \
                         --create-namespace
+                    '''
+                }
+            }
+        }
+        
+        stage('Check Helm Status') {
+            steps {
+                script {
+                    echo "Checking Helm release status..."
+                    sh '''
+                        helm status helm --namespace to-do-app
                     '''
                 }
             }
@@ -79,6 +90,10 @@ pipeline {
         }
         failure {
             echo 'Pipeline failed. Please check the logs for errors.'
+        }
+        cleanup {
+            echo 'Cleaning up...'
+            // Optionally add cleanup steps here if needed
         }
     }
 }
