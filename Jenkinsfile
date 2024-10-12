@@ -60,8 +60,7 @@ pipeline {
                     sh '''
                         kubectl apply -f k8s/namespace.yml
                         kubectl apply -f k8s/service.yml
-                        kubectl apply -f k8s/deployments.yml
-                        kubectl apply -f k8s/pvc.yml
+                        kubectl apply -f k8s/deployment.yml
                     '''
 
                     sh "kubectl rollout status deployment/db -n weather-app --timeout=120s"
