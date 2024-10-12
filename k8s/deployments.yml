@@ -1,10 +1,13 @@
+# k8s/deployments.yaml
+
+# 1. Auth and DB in the same pod
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: auth-db
   namespace: weatherapp
 spec:
-  replicas: 1
+  replicas: 1  # Only one pod (auth and db together)
   selector:
     matchLabels:
       app: auth-db
@@ -18,55 +21,30 @@ spec:
         image: sharara99/auth:latest
         env:
         - name: DB_HOST
-          value: "localhost"  # db is now in the same pod
-        - name: DB_PORT
-          value: "3306"
-        - name: DB_USER
-          value: "root"
+          value: "localhost"  # db is now inside the same pod
         - name: DB_PASSWORD
           value: "my-secret-pw"
-        - name: DB_NAME
-          value: "my_database"
         ports:
-        - containerPort: 8080
+        - containerPort: 8080  # Port for auth service
+
       - name: db
-        image: sharara99/db:latest
+        image: mysql:5.7  # MySQL container
         env:
         - name: MYSQL_ROOT_PASSWORD
           value: "my-secret-pw"
         ports:
-        - containerPort: 3306
+        - containerPort: 3306  # Port for MySQL database
+        volumeMounts:
+        - name: db-data
+          mountPath: /var/lib/mysql  # Data persistence for MySQL
+
+      volumes:
+      - name: db-data
+        persistentVolumeClaim:
+          claimName: mysql-pvc  # Reference to the volume for database storage
+
 ---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ui
-  namespace: weatherapp
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: ui
-  template:
-    metadata:
-      labels:
-        app: ui
-    spec:
-      containers:
-      - name: ui
-        image: sharara99/ui:latest # Replace with your actual image
-        env:
-        - name: AUTH_HOST
-          value: "auth-db"  # Updated to reflect combined auth-db pod
-        - name: AUTH_PORT
-          value: "8080"
-        - name: WEATHER_HOST
-          value: "weather"
-        - name: WEATHER_PORT
-          value: "5000"
-        ports:
-        - containerPort: 3000
----
+# 2. Weather service
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -84,7 +62,42 @@ spec:
     spec:
       containers:
       - name: weather
-        image: sharara99/weather:latest # Replace with your actual image
+        image: sharara99/weather:latest
         env:
         - name: APIKEY
           value: "6d92c50bdamsh81137f3b87ace1fp1d53eejsnfe818b9dbc83"
+        ports:
+        - containerPort: 5000  # Port for weather service
+
+---
+# 3. UI service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui
+  namespace: weatherapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui
+  template:
+    metadata:
+      labels:
+        app: ui
+    spec:
+      containers:
+      - name: ui
+        image: sharara99/ui:latest
+        env:
+        - name: AUTH_HOST
+          value: "auth-db"  # Reference to the auth-db pod
+        - name: AUTH_PORT
+          value: "8080"
+        - name: WEATHER_HOST
+          value: "weather"  # Reference to the weather pod
+        - name: WEATHER_PORT
+          value: "5000"
+        ports:
+        - containerPort: 3000  # Port for UI service
+
