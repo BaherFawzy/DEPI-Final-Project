@@ -62,8 +62,10 @@ pipeline {
                         helm upgrade --install helm k8s/helm \
                         --namespace to-do-app \
                         --set image.tag=${BUILD_NUMBER} \
-                        --set pramithous.image.tag=latest \
+                        --set pramithous.image.tag=main \
                         --set grafana.image.tag=latest \
+                        --set pramithous.enabled=true \
+                        --set grafana.enabled=true \
                         --create-namespace
                     '''
                 }

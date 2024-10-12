@@ -1,3 +1,5 @@
+# values.yaml
+
 # Number of replicas for your to-do-app
 replicaCount: 4  
 
@@ -5,7 +7,7 @@ replicaCount: 4
 image:
   repository: sharara99/to-do-app  # Your image repository
   pullPolicy: IfNotPresent           # Image pull policy
-  tag: "latest"                      # Image tag
+  tag: "latest"                      # Default tag, can be overridden during deployment
 
 # Image pull secrets (if you use a private registry)
 imagePullSecrets: []
@@ -48,13 +50,6 @@ ingress:
 
 # Resource requests and limits for to-do-app (adjust as needed)
 resources: {}
-  # Uncomment and adjust as needed
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
 
 # Liveness and readiness probes for to-do-app
 livenessProbe:
@@ -72,7 +67,6 @@ autoscaling:
   minReplicas: 1
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
 
 # Volumes and VolumeMounts (if any)
 volumes: []
@@ -87,8 +81,8 @@ affinity: {}
 pramithous:
   enabled: true
   image:
-    repository: prom/prometheus  # Official Pramithous image
-    tag: main  # Specify version if needed
+    repository: prom/prometheus  # Official Prometheus image
+    tag: main                   # Use the latest tag for Pramithous
   service:
     enabled: true
     port: 8080
@@ -98,7 +92,7 @@ grafana:
   enabled: true
   image:
     repository: grafana/grafana
-    tag: latest  # Specify version if needed
+    tag: latest                   # Use the latest tag for Grafana
   service:
     enabled: true
     port: 3000
