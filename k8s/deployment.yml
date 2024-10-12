@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: db
+  name: to-do
   namespace: to-do-app
 spec:
   replicas: 4
