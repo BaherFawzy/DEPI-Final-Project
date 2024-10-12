@@ -87,7 +87,7 @@ affinity: {}
 pramithous:
   enabled: true
   image:
-    repository: pramithous/pramithous  # Official Pramithous image
+    repository: prom/prometheus  # Official Pramithous image
     tag: latest  # Specify version if needed
   service:
     enabled: true
