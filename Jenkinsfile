@@ -4,9 +4,7 @@ pipeline {
     stages {
         stage('Setup') {
             steps {
-                script {
-                    git branch: 'main', credentialsId: 'Github', url: 'https://github.com/sharara99/DEPI-Final-Project.git'
-                }
+                git branch: 'main', credentialsId: 'Github', url: 'https://github.com/sharara99/DEPI-Final-Project.git'
             }
         }
 
@@ -60,6 +58,20 @@ pipeline {
                 script {
                     echo "Deploying to Kubernetes using Helm..."
 
+                    // Set variables directly in this stage
+                    def kubeNamespace = "to-do-app"
+                    def dockerImage = "sharara99/to-do-app"
+                    def helmReleaseName = "to-do"
+                    def helmChartPath = "k8s/helm"  // Correct path to your Helm chart
+
+                    // Install or upgrade the Helm release
+                    sh '''
+                        helm upgrade --install ${helmReleaseName} ${helmChartPath} \
+                        --namespace ${kubeNamespace} \
+                        --set image.repository=${dockerImage} \
+                        --set image.tag=${BUILD_NUMBER} \
+                        --create-namespace
+                    '''
                 }
             }
         }
