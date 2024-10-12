@@ -2,53 +2,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: db
-  namespace: weather-app
-spec:
-  ports:
-    - port: 3306
-      targetPort: 3306
-  selector:
-    app: db
-  type: ClusterIP
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: auth
-  namespace: weather-app
-spec:
-  ports:
-    - port: 8080
-      targetPort: 8080
-  selector:
-    app: auth
-  type: ClusterIP
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: weather
-  namespace: weather-app
-spec:
-  ports:
-    - port: 5000
-      targetPort: 5000
-  selector:
-    app: weather
-  type: ClusterIP
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ui
-  namespace: weather-app
+  namespace: to-do
 spec:
   ports:
     - port: 3000
       targetPort: 3000
   selector:
-    app: ui
+    app: db
   type: NodePort

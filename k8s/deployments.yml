@@ -2,119 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: db
-  namespace: weather-app
+  namespace: to-do-app
 spec:
-  replicas: 1
+  replicas: 4
   selector:
     matchLabels:
-      app: db
+      app: to-do
   template:
     metadata:
       labels:
-        app: db
+        app: to-do
     spec:
       containers:
-      - name: db
-        image: sharara99/db:latest  # Check if this image is correct
-        env:
-          - name: MYSQL_ROOT_PASSWORD
-            value: "my-secret-pw"
-        ports:
-          - containerPort: 3306
-        volumeMounts:
-          - name: db-data
-            mountPath: /var/lib/mysql
-          - name: mysql-init
-            mountPath: /docker-entrypoint-initdb.d
-      volumes:
-        - name: db-data
-          persistentVolumeClaim:
-            claimName: db-data
-        - name: mysql-init
-          hostPath:
-            path: ./mysql-init
-
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: auth
-  namespace: weather-app
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: auth
-  template:
-    metadata:
-      labels:
-        app: auth
-    spec:
-      containers:
-      - name: auth
-        image: sharara99/auth:latest
-        imagePullPolicy: Always  # Move this line here
-        env:
-          - name: DB_HOST
-            value: "db"
-          - name: DB_PASSWORD
-            value: "my-secret-pw"
-        ports:
-          - containerPort: 8080
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: weather
-  namespace: weather-app
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: weather
-  template:
-    metadata:
-      labels:
-        app: weather
-    spec:
-      containers:
-      - name: weather
-        image: sharara99/weather:latest
-        imagePullPolicy: Always  # Move this line here
-        env:
-          - name: APIKEY
-            value: "6d92c50bdamsh81137f3b87ace1fp1d53eejsnfe818b9dbc83"
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ui
-  namespace: weather-app
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: ui
-  template:
-    metadata:
-      labels:
-        app: ui
-    spec:
-      containers:
-      - name: ui
-        image: sharara99/ui:latest
-        imagePullPolicy: Always  # Move this line here
-        env:
-          - name: AUTH_HOST
-            value: "auth"
-          - name: AUTH_PORT
-            value: "8080"
-          - name: WEATHER_HOST
-            value: "weather"
-          - name: WEATHER_PORT
-            value: "5000"
+      - name: to-do-app
+        image: sharara99/to-do-app:latest  
         ports:
           - containerPort: 3000
