@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pramithous-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.pramithous.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: pramithous
+  template:
+    metadata:
+      labels:
+        app: pramithous
+    spec:
+      containers:
+      - name: pramithous-container
+        image: {{ .Values.pramithous.image.repository }}:{{ .Values.pramithous.image.tag }}
+        ports:
+          - containerPort: {{ .Values.pramithous.service.port }}
+        livenessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.pramithous.service.port }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.pramithous.service.port }}

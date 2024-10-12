@@ -1,11 +1,11 @@
-# This will set the replicaset count
-replicaCount: 4  # Number of replicas for your to-do-app
+# Number of replicas for your to-do-app
+replicaCount: 4  
 
-# Container image details
+# Container image details for the to-do-app
 image:
   repository: sharara99/to-do-app  # Your image repository
-  pullPolicy: IfNotPresent          # Image pull policy
-  tag: "latest"                     # Image tag
+  pullPolicy: IfNotPresent           # Image pull policy
+  tag: "latest"                      # Image tag
 
 # Image pull secrets (if you use a private registry)
 imagePullSecrets: []
@@ -29,12 +29,12 @@ podLabels: {}
 podSecurityContext: {}
 securityContext: {}
 
-# Service configuration
+# Service configuration for to-do-app
 service:
-  type: NodePort   # Changed to NodePort, since this is what you mentioned earlier
+  type: NodePort   # Changed to NodePort for accessibility
   port: 3000       # The port for the service
 
-# Ingress (if needed, enable this section)
+# Ingress configuration (if needed, enable this section)
 ingress:
   enabled: false
   className: ""
@@ -46,8 +46,9 @@ ingress:
           pathType: ImplementationSpecific
   tls: []
 
-# Resource requests and limits (adjust as needed)
+# Resource requests and limits for to-do-app (adjust as needed)
 resources: {}
+  # Uncomment and adjust as needed
   # limits:
   #   cpu: 100m
   #   memory: 128Mi
@@ -55,7 +56,7 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
-# Liveness and readiness probes
+# Liveness and readiness probes for to-do-app
 livenessProbe:
   httpGet:
     path: /
@@ -81,3 +82,23 @@ volumeMounts: []
 nodeSelector: {}
 tolerations: []
 affinity: {}
+
+# Pramithous configuration
+pramithous:
+  enabled: true
+  image:
+    repository: pramithous/pramithous  # Official Pramithous image
+    tag: latest  # Specify version if needed
+  service:
+    enabled: true
+    port: 8080
+
+# Grafana configuration
+grafana:
+  enabled: true
+  image:
+    repository: grafana/grafana
+    tag: latest  # Specify version if needed
+  service:
+    enabled: true
+    port: 3000
