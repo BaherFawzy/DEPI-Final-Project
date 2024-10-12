@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: db
-        image: mysql
+        image: sharara99/db:latest
         env:
           - name: MYSQL_ROOT_PASSWORD
             value: "my-secret-pw"
@@ -52,7 +52,7 @@ spec:
     spec:
       containers:
       - name: auth
-        image: auth:latest
+        image: sharara99/auth:latest
         imagePullPolicy: Always  # Move this line here
         env:
           - name: DB_HOST
@@ -80,7 +80,7 @@ spec:
     spec:
       containers:
       - name: weather
-        image: weather:latest
+        image: sharara99/weather:latest
         imagePullPolicy: Always  # Move this line here
         env:
           - name: APIKEY
@@ -104,7 +104,7 @@ spec:
     spec:
       containers:
       - name: ui
-        image: ui:latest
+        image: sharara99/ui:latest
         imagePullPolicy: Always  # Move this line here
         env:
           - name: AUTH_HOST
