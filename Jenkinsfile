@@ -61,6 +61,7 @@ pipeline {
                     echo "Deploying to Kubernetes using Helm..."
 
                     // Set variables directly in this stage
+                    
                     def kubeNamespace = "to-do-app"
                     def dockerImage = "sharara99/to-do-app"
                     def helmReleaseName = "to-do-app-v2"  // Updated release name to avoid conflicts
@@ -78,6 +79,7 @@ pipeline {
 
                     // Install or upgrade the Helm release
                     sh """
+                        kubectl delete namespace to-do-app
                         helm upgrade --install ${helmReleaseName} ${helmChartPath} \
                         --namespace ${kubeNamespace} \
                         --set image.repository=${dockerImage} \
