@@ -63,7 +63,7 @@ pipeline {
                     // Set variables directly in this stage
                     def kubeNamespace = "to-do-app"
                     def dockerImage = "sharara99/to-do-app"
-                    def helmReleaseName = "to-do-app"
+                    def helmReleaseName = "to-do-app-v2"  // Updated release name to avoid conflicts
                     def helmChartPath = "k8s/helm"  // Correct path to your Helm chart
 
                     // Check if namespace exists
