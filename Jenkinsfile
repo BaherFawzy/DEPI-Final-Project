@@ -79,7 +79,6 @@ pipeline {
 
                     // Install or upgrade the Helm release
                     sh """
-                        kubectl delete namespace to-do-app
                         helm upgrade --install ${helmReleaseName} ${helmChartPath} \
                         --namespace ${kubeNamespace} \
                         --set image.repository=${dockerImage} \
