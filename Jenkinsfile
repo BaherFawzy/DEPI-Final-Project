@@ -63,7 +63,6 @@ pipeline {
                     // Set variables directly in this stage
                     def kubeNamespace = "to-do-app"
                     def dockerImage = "sharara99/to-do-app"
-                    def helmReleaseName = "to-do-app"
                     def helmChartPath = "k8s/helm"  // Correct path to your Helm chart
 
                     // Check if namespace exists
@@ -78,7 +77,7 @@ pipeline {
 
                     // Install or upgrade the Helm release
                     sh """
-                        helm upgrade --install ${helmReleaseName} ${helmChartPath} \
+                        helm upgrade --install ${helmChartPath} \
                         --namespace ${kubeNamespace} \
                         --set image.repository=${dockerImage} \
                         --set image.tag=${BUILD_NUMBER}
