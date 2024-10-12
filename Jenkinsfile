@@ -38,8 +38,8 @@ pipeline {
                 script {
                     echo "Running Ansible playbook for configuration..."
                     ls -la  // Check contents of the ansible main directory
-                    ansible --version
-                    ansible-playbook -i inventory.ini ansible-playbook.yml
+                    sh 'ansible --version'  // Execute ansible version command within sh
+                    sh 'ansible-playbook -i inventory.ini ansible-playbook.yml'
                 }
             }
         }
