@@ -67,7 +67,7 @@ pipeline {
                     sh "kubectl rollout status deployment/to-do -n to-do-app --timeout=120s"
 
                     sh '''
-                        kubectl set image deployment/to-do to-do=sharara99/to-do-app:${BUILD_NUMBER} --record -n to-do-app
+                        kubectl set image deployment/to-do to-do-app=sharara99/to-do-app:${BUILD_NUMBER} --record -n to-do-app
                     '''
                 }
             }
