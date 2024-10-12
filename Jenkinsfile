@@ -65,13 +65,13 @@ pipeline {
                     def helmChartPath = "k8s/helm"  // Correct path to your Helm chart
 
                     // Install or upgrade the Helm release
-                    sh '''
+                    sh """
                         helm upgrade --install ${helmReleaseName} ${helmChartPath} \
                         --namespace ${kubeNamespace} \
                         --set image.repository=${dockerImage} \
                         --set image.tag=${BUILD_NUMBER} \
                         --create-namespace
-                    '''
+                    """
                 }
             }
         }
