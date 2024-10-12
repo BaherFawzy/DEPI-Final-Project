@@ -57,9 +57,15 @@ pipeline {
             steps {
                 script {
                     echo "Deploying to Kubernetes using Helm..."
-                    // Install or upgrade the Helm release
+
                     sh '''
-                        helm install helm k8s/helm --namespace to-do-app --create-namespace
+                        # Check if the namespace exists
+                        if ! kubectl get namespace to-do-app; then
+                            kubectl create namespace to-do-app
+                        fi
+
+                        # Upgrade or install the Helm release
+                        helm upgrade --install helm k8s/helm --namespace to-do-app
                     '''
                 }
             }
