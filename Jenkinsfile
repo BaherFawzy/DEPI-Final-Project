@@ -4,7 +4,9 @@ pipeline {
     stages {
         stage('Setup') {
             steps {
-                git branch: 'main', credentialsId: 'Github', url: 'https://github.com/sharara99/DEPI-Final-Project.git'
+                script {
+                    git branch: 'main', credentialsId: 'Github', url: 'https://github.com/sharara99/DEPI-Final-Project.git'
+                }
             }
         }
 
