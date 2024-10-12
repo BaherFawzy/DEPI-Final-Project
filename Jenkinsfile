@@ -63,22 +63,11 @@ pipeline {
                         kubectl apply -f k8s/deployment.yml
                     '''
 
-                    sh "kubectl rollout status deployment/db -n weather-app --timeout=120s"
-                    sh "kubectl rollout status deployment/auth -n weather-app --timeout=120s"
-                    sh "kubectl rollout status deployment/weather -n weather-app --timeout=120s"
-                    sh "kubectl rollout status deployment/ui -n weather-app --timeout=120s"
+                    sh "kubectl rollout status deployment/to-do -n to-do-app --timeout=120s"
 
                     sh '''
-                        kubectl set image deployment/auth auth=sharara99/auth:${BUILD_NUMBER} --record -n weather-app
-                        kubectl set image deployment/db db=sharara99/db:${BUILD_NUMBER} --record -n weather-app
-                        kubectl set image deployment/weather weather=sharara99/weather:${BUILD_NUMBER} --record -n weather-app
-                        kubectl set image deployment/ui ui=sharara99/ui:${BUILD_NUMBER} --record -n weather-app
+                        kubectl set image deployment/to-do to-do=sharara99/to-do-app:${BUILD_NUMBER} --record -n to-do-app
                     '''
-
-                    sh "kubectl rollout status deployment/db -n weather-app --timeout=120s"
-                    sh "kubectl rollout status deployment/auth -n weather-app --timeout=120s"
-                    sh "kubectl rollout status deployment/weather -n weather-app --timeout=120s"
-                    sh "kubectl rollout status deployment/ui -n weather-app --timeout=120s"
                 }
             }
         }
