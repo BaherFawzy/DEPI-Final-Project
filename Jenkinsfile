@@ -16,10 +16,11 @@ pipeline {
                         terraform plan -out=tfplan
 
                         # Check if there are changes to be applied
-                        if ! terraform show -json tfplan | jq .planned_values.root_module.resources | grep '"change":null'; then
-                            echo "No changes to infrastructure"
-                        else
+                        if terraform show -json tfplan | jq .resource_changes | grep -q '"change"'; then
+                            echo "Changes detected, applying infrastructure changes..."
                             terraform apply -auto-approve tfplan
+                        else
+                            echo "No changes to infrastructure, skipping apply."
                         fi
                     '''
                 }
