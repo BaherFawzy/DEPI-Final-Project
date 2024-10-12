@@ -59,7 +59,20 @@ pipeline {
                     echo "Deploying to Kubernetes using Helm..."
                     // Upgrade the Helm release with the new image tag
                     sh '''
+                        # Deploy the main application
                         helm upgrade --install helm k8s/helm \
+                        --namespace to-do-app \
+                        --set image.tag=${BUILD_NUMBER} \
+                        --create-namespace
+                        
+                        # Deploy pramithouse
+                        helm upgrade --install pramithouse k8s/pramithouse \
+                        --namespace to-do-app \
+                        --set image.tag=${BUILD_NUMBER} \
+                        --create-namespace
+                        
+                        # Deploy graffanna
+                        helm upgrade --install graffanna k8s/graffanna \
                         --namespace to-do-app \
                         --set image.tag=${BUILD_NUMBER} \
                         --create-namespace
