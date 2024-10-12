@@ -60,7 +60,7 @@ pipeline {
                 script {
                     echo "Deploying to Kubernetes using Helm..."
 
-                    // Set variables directly in this stage
+                    // Set variables
                     def kubeNamespace = "to-do-app"
                     def dockerImage = "sharara99/to-do-app"
                     def helmReleaseName = "to-do-app"
@@ -74,6 +74,19 @@ pipeline {
                         sh "kubectl create namespace ${kubeNamespace}"
                     } else {
                         echo "Namespace ${kubeNamespace} already exists."
+
+                        // Check for Helm metadata and add if missing
+                        def labelCheck = sh(script: "kubectl get namespace ${kubeNamespace} -o jsonpath='{.metadata.labels.app\\.kubernetes\\.io/managed-by}'", returnStatus: true)
+                        if (labelCheck != 0) {
+                            echo "Adding Helm labels and annotations to the existing namespace."
+                            sh """
+                                kubectl label namespace ${kubeNamespace} app.kubernetes.io/managed-by=Helm --overwrite
+                                kubectl annotate namespace ${kubeNamespace} meta.helm.sh/release-name=${helmReleaseName} --overwrite
+                                kubectl annotate namespace ${kubeNamespace} meta.helm.sh/release-namespace=${kubeNamespace} --overwrite
+                            """
+                        } else {
+                            echo "Namespace ${kubeNamespace} already has the correct Helm metadata."
+                        }
                     }
 
                     // Install or upgrade the Helm release
