@@ -1,55 +1,73 @@
-# k8s/deployments.yaml
-
-# 1. Auth and DB in the same pod
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-db
-  namespace: weatherapp
+  name: db
+  namespace: weather-app
 spec:
-  replicas: 1  # Only one pod (auth and db together)
+  replicas: 1
   selector:
     matchLabels:
-      app: auth-db
+      app: db
   template:
     metadata:
       labels:
-        app: auth-db
+        app: db
+    spec:
+      containers:
+      - name: db
+        image: mysql
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: "my-secret-pw"
+        ports:
+          - containerPort: 3306
+        volumeMounts:
+          - name: db-data
+            mountPath: /var/lib/mysql
+          - name: mysql-init
+            mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: db-data
+          persistentVolumeClaim:
+            claimName: db-data
+        - name: mysql-init
+          hostPath:
+            path: ./mysql-init
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth
+  namespace: weather-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
     spec:
       containers:
       - name: auth
-        image: sharara99/auth:latest
+        image: auth:latest
         env:
-        - name: DB_HOST
-          value: "localhost"  # db is now inside the same pod
-        - name: DB_PASSWORD
-          value: "my-secret-pw"
+          - name: DB_HOST
+            value: "db"
+          - name: DB_PASSWORD
+            value: "my-secret-pw"
         ports:
-        - containerPort: 8080  # Port for auth service
-
-      - name: db
-        image: mysql:5.7  # MySQL container
-        env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: "my-secret-pw"
-        ports:
-        - containerPort: 3306  # Port for MySQL database
-        volumeMounts:
-        - name: db-data
-          mountPath: /var/lib/mysql  # Data persistence for MySQL
-
-      volumes:
-      - name: db-data
-        persistentVolumeClaim:
-          claimName: mysql-pvc  # Reference to the volume for database storage
+          - containerPort: 8080
+      imagePullPolicy: Always
 
 ---
-# 2. Weather service
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: weather
-  namespace: weatherapp
+  namespace: weather-app
 spec:
   replicas: 1
   selector:
@@ -62,20 +80,18 @@ spec:
     spec:
       containers:
       - name: weather
-        image: sharara99/weather:latest
+        image: weather:latest
         env:
-        - name: APIKEY
-          value: "6d92c50bdamsh81137f3b87ace1fp1d53eejsnfe818b9dbc83"
-        ports:
-        - containerPort: 5000  # Port for weather service
+          - name: APIKEY
+            value: "6d92c50bdamsh81137f3b87ace1fp1d53eejsnfe818b9dbc83"
+      imagePullPolicy: Always
 
 ---
-# 3. UI service
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ui
-  namespace: weatherapp
+  namespace: weather-app
 spec:
   replicas: 1
   selector:
@@ -88,16 +104,16 @@ spec:
     spec:
       containers:
       - name: ui
-        image: sharara99/ui:latest
+        image: ui:latest
         env:
-        - name: AUTH_HOST
-          value: "auth-db"  # Reference to the auth-db pod
-        - name: AUTH_PORT
-          value: "8080"
-        - name: WEATHER_HOST
-          value: "weather"  # Reference to the weather pod
-        - name: WEATHER_PORT
-          value: "5000"
+          - name: AUTH_HOST
+            value: "auth"
+          - name: AUTH_PORT
+            value: "8080"
+          - name: WEATHER_HOST
+            value: "weather"
+          - name: WEATHER_PORT
+            value: "5000"
         ports:
-        - containerPort: 3000  # Port for UI service
-
+          - containerPort: 3000
+      imagePullPolicy: Always
