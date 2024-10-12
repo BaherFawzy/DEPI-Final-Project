@@ -66,13 +66,22 @@ pipeline {
                     def helmReleaseName = "to-do-app"
                     def helmChartPath = "k8s/helm"  // Correct path to your Helm chart
 
+                    // Check if namespace exists
+                    def namespaceExists = sh(script: "kubectl get namespaces | grep ${kubeNamespace}", returnStatus: true)
+
+                    if (namespaceExists != 0) {
+                        echo "Creating namespace ${kubeNamespace}."
+                        sh "kubectl create namespace ${kubeNamespace}"
+                    } else {
+                        echo "Namespace ${kubeNamespace} already exists."
+                    }
+
                     // Install or upgrade the Helm release
                     sh """
                         helm upgrade --install ${helmReleaseName} ${helmChartPath} \
                         --namespace ${kubeNamespace} \
                         --set image.repository=${dockerImage} \
-                        --set image.tag=${BUILD_NUMBER} \
-                        --create-namespace
+                        --set image.tag=${BUILD_NUMBER}
                     """
                 }
             }

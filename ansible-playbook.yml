@@ -21,8 +21,8 @@
 
     - name: Build and push Docker images
       shell: |
-        docker build -t sharara99/to-do-list:{{ build_number }} . 
-        docker push sharara99/to-do-list:{{ build_number }}
+        docker build -t sharara99/to-do-app:{{ build_number }} . 
+        docker push sharara99/to-do-app:{{ build_number }}
       args:
         chdir: /home/ubuntu/getting-started-app
       ignore_errors: yes
