@@ -57,15 +57,12 @@ pipeline {
             steps {
                 script {
                     echo "Deploying to Kubernetes using Helm..."
-
+                    // Upgrade the Helm release with the new image tag
                     sh '''
-                        # Check if the namespace exists
-                        if ! kubectl get namespace to-do-app; then
-                            kubectl create namespace to-do-app
-                        fi
-
-                        # Upgrade or install the Helm release
-                        helm upgrade --install helm k8s/helm --namespace to-do-app --set image.tag=${BUILD_NUMBER}
+                        helm upgrade --install helm k8s/helm \
+                        --namespace to-do-app \
+                        --set image.tag=${BUILD_NUMBER} \
+                        --create-namespace
                     '''
                 }
             }
