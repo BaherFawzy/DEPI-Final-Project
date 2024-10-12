@@ -8,5 +8,5 @@ spec:
     - port: 3000
       targetPort: 3000
   selector:
-    app: db
+    app: to-do-app
   type: NodePort

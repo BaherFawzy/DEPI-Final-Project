@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: to-do
+  name: to-do-app
   namespace: to-do-app
 spec:
   replicas: 4
   selector:
     matchLabels:
-      app: to-do
+      app: to-do-app
   template:
     metadata:
       labels:
-        app: to-do
+        app: to-do-app
     spec:
       containers:
       - name: to-do-app
