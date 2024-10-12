@@ -58,19 +58,9 @@ pipeline {
                 script {
                     echo "Deploying to Kubernetes using Helm..."
 
-                    // Set variables directly in this stage
-                    def kubeNamespace = "to-do-app"
-                    def dockerImage = "sharara99/to-do-app"
-                    def helmReleaseName = "helm"
-                    def helmChartPath = "k8s/"  // Adjust this to the correct path of your Helm chart
-
                     // Install or upgrade the Helm release
                     sh '''
-                        helm upgrade --install ${helmReleaseName} ${helmChartPath} \
-                        --namespace ${kubeNamespace} \
-                        --set image.repository=${dockerImage} \
-                        --set image.tag=${BUILD_NUMBER} \
-                        --set replicaCount=1
+                        helm install helm k8s/helm --namespace to-do-app --create-namespace
                     '''
                 }
             }
