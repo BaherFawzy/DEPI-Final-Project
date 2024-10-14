@@ -33,6 +33,11 @@ GRAFANA_URL=$(minikube service -n monitoring $GRAFANA_SVC --url)
 echo "Prometheus URL: $PROMETHEUS_URL"
 echo "Grafana URL: $GRAFANA_URL"
 
+#  consider restarting the deployments
+kubectl rollout restart deployment grafana -n monitoring
+kubectl rollout restart deployment prometheus-server -n monitoring
+
 # Open URL on browser
 xdg-open $PROMETHEUS_URL
 xdg-open $GRAFANA_URL
+
