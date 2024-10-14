@@ -69,17 +69,7 @@ pipeline {
             }
         }
 
-        stage('Deploy Monitoring with Helm') {
-            steps {
-                script {
-                    echo "Deploying Prometheus and Grafana for monitoring..."
-                    sh '''
-                        chmod +x k8s/helm/Monitoring/monitoring-deploy.sh
-                        ./k8s/helm/Monitoring/monitoring-deploy.sh
-                    '''
-                }
-            }
-        }
+
     }
 
     post {
