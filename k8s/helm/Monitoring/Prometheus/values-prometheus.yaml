@@ -62,7 +62,16 @@ configmapReload:
     ## configmap-reload resource requests and limits
     ## Ref: http://kubernetes.io/docs/user-guide/compute-resources/
     ##
-    resources: {}
+    resources:
+     limits:
+        cpu: 1
+        memory: 1Gi
+     requests:
+       cpu: 500m
+       memory: 512Mi
+
+  
+    
 
 server:
   ## Prometheus server container name
