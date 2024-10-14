@@ -77,22 +77,3 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 
-# Pramithous configuration
-pramithous:
-  enabled: true
-  image:
-    repository: prom/prometheus  # Official Prometheus image
-    tag: main                   # Use the latest tag for Pramithous
-  service:
-    enabled: true
-    port: 8080
-
-# Grafana configuration
-grafana:
-  enabled: true
-  image:
-    repository: grafana/grafana
-    tag: latest                   # Use the latest tag for Grafana
-  service:
-    enabled: true
-    port: 3000
