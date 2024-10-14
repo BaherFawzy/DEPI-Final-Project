@@ -20,8 +20,8 @@ helm repo update
 kubectl create ns $NAMESPACE || true
 
 # Deploy Prometheus and Grafana
-helm install $PROMETHEUS_RELEASENAME prometheus-community/prometheus --namespace $NAMESPACE --values="$PWD/k8s/helm/Prometheus/values-prometheus.yaml"
-helm install $GRAFANA_RELEASENAME grafana/grafana --namespace $NAMESPACE --values="$PWD/k8s/helm/Grafana/values-grafana.yaml"
+helm install $PROMETHEUS_RELEASENAME prometheus-community/prometheus --namespace $NAMESPACE --values="$PWD/k8s/helm//MonitoringPrometheus/values-prometheus.yaml"
+helm install $GRAFANA_RELEASENAME grafana/grafana --namespace $NAMESPACE --values="$PWD/k8s/helm/Monitoring/Grafana/values-grafana.yaml"
 
 # Wait for the pods to start
 sleep 60s
