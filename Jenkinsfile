@@ -65,6 +65,12 @@ pipeline {
                             kubectl create ns argocd
                         fi
 
+                        # Check if ArgoCD is already installed and uninstall it if necessary
+                        if helm ls -n argocd | grep -q 'argocd'; then
+                            echo "Uninstalling existing ArgoCD release..."
+                            helm uninstall argocd --namespace argocd
+                        fi
+
                         # Deploy Argocd
                         helm repo add argo https://argoproj.github.io/argo-helm || true
                         helm install argocd argo/argo-cd \
