@@ -73,41 +73,6 @@ pipeline {
             }
         }
 
-        stage('Add GitHub Repo to ArgoCD') {
-            steps {
-                script {
-                    echo "Adding GitHub repository to ArgoCD..."
-                    sh '''
-                        # Wait for a moment to ensure ArgoCD is fully up
-                        sleep 30
-
-                        # Extract the ArgoCD server URL
-                        ARGO_CD_SERVER=$(minikube service -n argocd argocd-server --url)
-                        echo "ArgoCD URL: $ARGO_CD_SERVER"
-                        
-                        # Login to ArgoCD
-                        argocd login $ARGO_CD_SERVER --username admin --password $(cat argo-pass.txt)
-                        
-                        # Add GitHub repository using credentials from Jenkins
-                        withCredentials([usernamePassword(credentialsId: 'Github', passwordVariable: 'GITHUB_PASSWORD', usernameVariable: 'GITHUB_USERNAME')]) {
-                            argocd repo add https://github.com/sharara99/DEPI-Final-Project.git --username ${GITHUB_USERNAME} --password ${GITHUB_PASSWORD}
-                        }
-                        
-                        # Create ArgoCD application with specified values
-                        argocd app create to-do-app \
-                            --repo https://github.com/sharara99/DEPI-Final-Project.git \
-                            --path k8s/helm \
-                            --dest-server https://kubernetes.default.svc \
-                            --dest-namespace to-do-app \
-                            --project default  # Change if you have a specific project
-                        
-                        # Optional: Sync the application
-                        argocd app sync to-do-app
-                    '''
-                }
-            }
-        }
-
         stage('Deploy to Kubernetes with Helm') {
             steps {
                 script {
