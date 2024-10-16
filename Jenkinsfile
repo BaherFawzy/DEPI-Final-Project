@@ -83,6 +83,14 @@ pipeline {
                 script {
                     echo "Deploying application to Kubernetes using Helm..."
                     sh '''
+                        # Check if the namespace already exists
+                        if kubectl get namespace to-do-app; then
+                            echo "Namespace 'to-do-app' already exists, proceeding with deployment..."
+                        else
+                            echo "Creating namespace 'to-do-app'..."
+                            kubectl create namespace to-do-app
+                        fi
+
                         helm upgrade --install helm k8s/helm/app \
                         --namespace to-do-app \
                         --set image.tag=${BUILD_NUMBER} \
