@@ -65,16 +65,11 @@ pipeline {
                             kubectl create ns argocd
                         fi
 
-                        # Delete the conflicting ServiceAccount if it exists
-                        if kubectl get serviceaccount argocd-application-controller -n argocd; then
-                            kubectl delete serviceaccount argocd-application-controller -n argocd
-                        fi
-
                         # Add ArgoCD Helm repository
                         helm repo add argo https://argoproj.github.io/argo-helm || true
 
-                        # Upgrade or install ArgoCD
-                        helm upgrade --install argocd argo/argo-cd --namespace argocd --create-namespace
+                        # Upgrade or install ArgoCD with force to handle existing resources
+                        helm upgrade --install argocd argo/argo-cd --namespace argocd --create-namespace --force
                     '''
                 }
             }
