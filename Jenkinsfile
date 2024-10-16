@@ -1,6 +1,11 @@
 pipeline {
     agent { label 'worker' }
 
+    environment {
+        GITHUB_CREDENTIALS = credentials('Github') // Fetch GitHub credentials
+        DOCKER_CREDENTIALS = credentials('DockerHub') // Fetch DockerHub credentials
+    }
+
     stages {
         stage('Setup') {
             steps {
@@ -68,6 +73,41 @@ pipeline {
                             echo "Directory k8s/helm/ArgoCD does not exist!"
                             exit 1
                         fi
+                    '''
+                }
+            }
+        }
+
+        stage('Add GitHub Repo to ArgoCD') {
+            steps {
+                script {
+                    echo "Adding GitHub repository to ArgoCD..."
+                    sh '''
+                        # Wait for a moment to ensure ArgoCD is fully up
+                        sleep 30
+                        
+                        # Install ArgoCD CLI if not already installed
+                        if ! command -v argocd &> /dev/null; then
+                            echo "ArgoCD CLI not found, installing..."
+                            curl -sSL https://argoproj.github.io/argo-cd/ | bash
+                        fi
+                        
+                        # Login to ArgoCD
+                        argocd login <ARGO_CD_SERVER> --username admin --password $(cat argo-pass.txt)
+                        
+                        # Add GitHub repository using credentials from Jenkins
+                        argocd repo add https://github.com/sharara99/DEPI-Final-Project.git --username ${GITHUB_CREDENTIALS_USR} --password ${GITHUB_CREDENTIALS_PSW}
+                        
+                        # Create ArgoCD application with specified values
+                        argocd app create to-do-app \
+                            --repo https://github.com/sharara99/DEPI-Final-Project.git \
+                            --path k8s/helm \
+                            --dest-server https://kubernetes.default.svc \
+                            --dest-namespace to-do-app \
+                            --project default  # Change if you have a specific project
+                        
+                        # Optional: Sync the application
+                        argocd app sync to-do-app
                     '''
                 }
             }
