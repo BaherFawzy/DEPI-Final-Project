@@ -60,14 +60,16 @@ pipeline {
                 script {
                     echo "Deploying ArgoCD using Helm..."
                     sh '''
-                        # Create Argocd Namespace
-                        kubectl create ns argocd || true
+                        # Create Argocd Namespace if it doesn't exist
+                        if ! kubectl get ns argocd; then
+                            kubectl create ns argocd
+                        fi
 
                         # Deploy Argocd
-                        helm repo add argo https://argoproj.github.io/argo-helm
+                        helm repo add argo https://argoproj.github.io/argo-helm || true
                         helm install argocd argo/argo-cd \
-                            --namespace argocd \
-                            --create-namespace
+                        --namespace argocd \
+                        --create-namespace
                     '''
                 }
             }
@@ -79,13 +81,14 @@ pipeline {
                     echo "Deploying application to Kubernetes using Helm..."
                     sh '''
                         helm upgrade --install helm k8s/helm/app \
-                            --namespace to-do-app \
-                            --set image.tag=${BUILD_NUMBER} \
-                            --create-namespace
+                        --namespace to-do-app \
+                        --set image.tag=${BUILD_NUMBER} \
+                        --create-namespace
                     '''
                 }
             }
         }
+
     }
 
     post {
