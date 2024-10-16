@@ -60,9 +60,14 @@ pipeline {
                 script {
                     echo "Deploying ArgoCD using Helm..."
                     sh '''
-                        cd k8s/hlem/ArgoCD
-                        ./deploy-argocd-minikube.sh
-
+                        ls -la
+                        if [ -d "k8s/helm/ArgoCD" ]; then
+                            cd k8s/helm/ArgoCD
+                            ./deploy-argocd-minikube.sh
+                        else
+                            echo "Directory k8s/helm/ArgoCD does not exist!"
+                            exit 1
+                        fi
                     '''
                 }
             }
