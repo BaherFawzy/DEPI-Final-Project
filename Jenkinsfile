@@ -88,7 +88,9 @@ pipeline {
                         # Install ArgoCD CLI if not already installed
                         if ! command -v argocd &> /dev/null; then
                             echo "ArgoCD CLI not found, installing..."
-                            curl -sSL https://argoproj.github.io/argo-cd/ | bash
+                            curl -sSL https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64 -o argocd
+                            chmod +x argocd
+                            sudo mv argocd /usr/local/bin/
                         fi
                         
                         # Login to ArgoCD
