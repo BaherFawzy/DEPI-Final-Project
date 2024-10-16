@@ -65,17 +65,16 @@ pipeline {
                             kubectl create ns argocd
                         fi
 
-                        # Check if ArgoCD is already installed and uninstall it if necessary
-                        if helm ls -n argocd | grep -q 'argocd'; then
-                            echo "Uninstalling existing ArgoCD release..."
-                            helm uninstall argocd --namespace argocd
+                        # Delete the conflicting ServiceAccount if it exists
+                        if kubectl get serviceaccount argocd-application-controller -n argocd; then
+                            kubectl delete serviceaccount argocd-application-controller -n argocd
                         fi
 
-                        # Deploy Argocd
+                        # Add ArgoCD Helm repository
                         helm repo add argo https://argoproj.github.io/argo-helm || true
-                        helm install argocd argo/argo-cd \
-                        --namespace argocd \
-                        --create-namespace
+
+                        # Upgrade or install ArgoCD
+                        helm upgrade --install argocd argo/argo-cd --namespace argocd --create-namespace
                     '''
                 }
             }
@@ -94,7 +93,6 @@ pipeline {
                 }
             }
         }
-
     }
 
     post {
