@@ -1,11 +1,6 @@
 pipeline {
     agent { label 'worker' }
 
-    environment {
-        GITHUB_CREDENTIALS = credentials('Github') // Fetch GitHub credentials
-        DOCKER_CREDENTIALS = credentials('DockerHub') // Fetch DockerHub credentials
-    }
-
     stages {
         stage('Setup') {
             steps {
@@ -96,7 +91,9 @@ pipeline {
                         argocd login <ARGO_CD_SERVER> --username admin --password $(cat argo-pass.txt)
                         
                         # Add GitHub repository using credentials from Jenkins
-                        argocd repo add https://github.com/sharara99/DEPI-Final-Project.git --username ${GITHUB_CREDENTIALS_USR} --password ${GITHUB_CREDENTIALS_PSW}
+                        withCredentials([usernamePassword(credentialsId: 'Github', passwordVariable: 'GITHUB_PASSWORD', usernameVariable: 'GITHUB_USERNAME')]) {
+                            argocd repo add https://github.com/sharara99/DEPI-Final-Project.git --username ${GITHUB_USERNAME} --password ${GITHUB_PASSWORD}
+                        }
                         
                         # Create ArgoCD application with specified values
                         argocd app create to-do-app \
