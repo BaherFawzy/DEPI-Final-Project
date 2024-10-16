@@ -68,6 +68,11 @@ pipeline {
                             echo "Directory k8s/helm/ArgoCD does not exist!"
                             exit 1
                         fi
+                        $(cat argo-pass.txt)
+
+                        # Extract the ArgoCD server URL
+                        ARGO_CD_SERVER=$(minikube service -n argocd argocd-server --url)
+                        echo "ArgoCD URL: $ARGO_CD_SERVER"                        
                     '''
                 }
             }
