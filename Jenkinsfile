@@ -55,21 +55,37 @@ pipeline {
             }
         }
 
-        stage('Deploy to Kubernetes') {
+        stage('Deploy ArgoCD with Helm') {
             steps {
                 script {
-                    echo "Deploying to Kubernetes using Helm..."
+                    echo "Deploying ArgoCD using Helm..."
                     sh '''
-                        helm upgrade --install helm k8s/helm \
-                        --namespace to-do-app \
-                        --set image.tag=${BUILD_NUMBER} \
-                        --create-namespace
+                        # Create Argocd Namespace
+                        kubectl create ns argocd || true
+
+                        # Deploy Argocd
+                        helm repo add argo https://argoproj.github.io/argo-helm
+                        helm install argocd argo/argo-cd \
+                            --namespace argocd \
+                            --create-namespace
                     '''
                 }
             }
         }
 
-
+        stage('Deploy to Kubernetes with Helm') {
+            steps {
+                script {
+                    echo "Deploying application to Kubernetes using Helm..."
+                    sh '''
+                        helm upgrade --install helm k8s/helm/app \
+                            --namespace to-do-app \
+                            --set image.tag=${BUILD_NUMBER} \
+                            --create-namespace
+                    '''
+                }
+            }
+        }
     }
 
     post {
