@@ -60,16 +60,9 @@ pipeline {
                 script {
                     echo "Deploying ArgoCD using Helm..."
                     sh '''
-                        # Create Argocd Namespace if it doesn't exist
-                        if ! kubectl get ns argocd; then
-                            kubectl create ns argocd
-                        fi
+                        cd k8s/hlem/ArgoCD
+                        ./deploy-argocd-minikube.sh
 
-                        # Add ArgoCD Helm repository
-                        helm repo add argo https://argoproj.github.io/argo-helm || true
-
-                        # Upgrade or install ArgoCD with force to handle existing resources
-                        helm upgrade --install argocd argo/argo-cd --namespace argocd --create-namespace --force
                     '''
                 }
             }
