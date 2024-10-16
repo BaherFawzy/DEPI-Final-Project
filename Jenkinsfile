@@ -84,17 +84,9 @@ pipeline {
                         # Extract the ArgoCD server URL
                         ARGO_CD_SERVER=$(minikube service -n argocd argocd-server --url)
                         echo "ArgoCD URL: $ARGO_CD_SERVER"
-                        
-                        # Install ArgoCD CLI if not already installed
-                        if ! command -v argocd &> /dev/null; then
-                            echo "ArgoCD CLI not found, installing..."
-                            curl -sSL https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64 -o argocd
-                            chmod +x argocd
-                            sudo mv argocd /usr/local/bin/
-                        fi
-                        
+
                         # Login to ArgoCD
-                        argocd login $ARGO_CD_SERVER --username admin --password $(cat argo-pass.txt)
+                        argocd login $ARGO_CD_SERVER --username admin --password $(cat argo-pass.txt) --insecure  # Add --insecure if using self-signed certs
                         
                         # Add GitHub repository using credentials from Jenkins
                         withCredentials([usernamePassword(credentialsId: 'Github', passwordVariable: 'GITHUB_PASSWORD', usernameVariable: 'GITHUB_USERNAME')]) {
