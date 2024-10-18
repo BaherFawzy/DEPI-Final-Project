@@ -18,22 +18,3 @@ spec:
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         ports:
           - containerPort: {{ .Values.service.port }}
-        resources:
-          requests:
-            memory: {{ .Values.resources.requests.memory }}
-            cpu: {{ .Values.resources.requests.cpu }}
-          limits:
-            memory: {{ .Values.resources.limits.memory }}
-            cpu: {{ .Values.resources.limits.cpu }}
-        livenessProbe:
-          httpGet:
-            path: {{ .Values.livenessProbe.httpGet.path }}  # Use path from values.yaml
-            port: {{ .Values.service.port }}
-          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
-        readinessProbe:
-          httpGet:
-            path: {{ .Values.readinessProbe.httpGet.path }}  # Use path from values.yaml
-            port: {{ .Values.service.port }}
-          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
