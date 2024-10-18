@@ -22,9 +22,17 @@
         username: "{{ docker_username }}"
         password: "{{ docker_password }}"
 
+    - name: Build and push Docker images
+      shell: |
+        docker build -t sharara99/to-do-app:{{ build_number }} .
+        docker push sharara99/to-do-app:{{ build_number }}
+      args:
+        chdir: /home/ubuntu/to-do-app
+      ignore_errors: yes
+
     - name: Update values.yaml with build number
       lineinfile:
-        path: "{{ repo_path }}/values.yaml"
+        path: "/home/ubuntu/to-do-app/k8s/helm/app/values.yaml"
         regexp: '^(.*image:.*:)(.*)$'
         line: '\1{{ build_number }}'
       when: build_number is defined
@@ -32,24 +40,17 @@
     - name: Stage changes in Git
       command: git add values.yaml
       args:
-        chdir: "{{ repo_path }}"
+        chdir: /home/ubuntu/to-do-app/k8s/helm/app
 
     - name: Commit changes to Git
       command: git commit -m "Update values.yaml with build number {{ build_number }}"
       args:
-        chdir: "{{ repo_path }}"
+        chdir: /home/ubuntu/to-do-app/k8s/helm/app
       ignore_errors: yes
 
     - name: Push changes to GitHub
       command: git push https://{{ github_username }}:{{ github_token }}@github.com/sharara99/to-do-app.git
       args:
-        chdir: "{{ repo_path }}"
+        chdir: /home/ubuntu/to-do-app/k8s/helm/app
       ignore_errors: yes
 
-    - name: Build and push Docker images
-      shell: |
-        docker build -t sharara99/to-do-app:{{ build_number }} .
-        docker push sharara99/to-do-app:{{ build_number }}
-      args:
-        chdir: "{{ repo_path }}"
-      ignore_errors: yes
