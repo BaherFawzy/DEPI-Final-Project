@@ -78,48 +78,9 @@ pipeline {
                 script {
                     echo "Creating ArgoCD Application..."
                     sh '''
-                        #!/bin/bash
-                        # Set ArgoCD app name and repo details
-                        ARGOCD_APP_NAME="to-do-app"
-                        ARGOCD_REPO_URL="https://github.com/sharara99/DEPI-Final-Project.git"
-                        ARGOCD_PATH="k8s/helm/app"
-                        ARGOCD_NAMESPACE="to-do-app"
-                        ARGOCD_CLUSTER="https://kubernetes.default.svc"
+                       cd k8s/helm/ArgoCD
+                       kubctl apply -f argocd-app.yaml
 
-                        # Read ArgoCD admin password from the file created by the deploy-argocd-minikube.sh script
-                        if [ ! -f argo-pass.txt ]; then
-                            echo "ArgoCD password file not found!"
-                            exit 1
-                        fi
-
-                        ARGOCD_PASSWORD=$(cat argo-pass.txt)
-
-                        # Get the ArgoCD server URLs
-                        ARGOCD_SERVER_URLS=$(minikube service -n argocd argocd-server --url)
-                        ARGOCD_SERVER_URL=$(echo $ARGOCD_SERVER_URLS | awk '{print $1}')  # Get the first URL
-
-                        # Login to ArgoCD using the extracted password
-                        argocd login --insecure --username admin --password $ARGOCD_PASSWORD --grpc-web $ARGOCD_SERVER_URL
-
-                        # Check if ArgoCD application already exists
-                        if argocd app get $ARGOCD_APP_NAME; then
-                            echo "Application $ARGOCD_APP_NAME already exists, syncing..."
-                            argocd app sync $ARGOCD_APP_NAME --server $ARGOCD_SERVER_URL
-                        else
-                            echo "Creating ArgoCD application $ARGOCD_APP_NAME..."
-                            argocd app create $ARGOCD_APP_NAME \
-                                --repo $ARGOCD_REPO_URL \
-                                --path $ARGOCD_PATH \
-                                --dest-server $ARGOCD_CLUSTER \
-                                --dest-namespace $ARGOCD_NAMESPACE \
-                                --sync-policy automated \
-                                --auto-prune \
-                                --self-heal \
-                                --server $ARGOCD_SERVER_URL  # Specify the server URL here
-
-                            # Sync the ArgoCD application
-                            argocd app sync $ARGOCD_APP_NAME --server $ARGOCD_SERVER_URL
-                        fi
                     '''
                 }
             }
