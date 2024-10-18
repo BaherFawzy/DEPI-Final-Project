@@ -6,6 +6,7 @@ replicaCount: 4
 # Container image details for the to-do-app
 image:
   repository: sharara99/to-do-app    # Your image repository
+  imagePullPolicy: Always  
   tag: "latest"                      # Default tag, can be overridden during deployment
 
 # Image pull secrets (if you use a private registry)
