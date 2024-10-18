@@ -29,7 +29,7 @@
 
     - name: Update the build number in values.yaml
       lineinfile:
-        path: /home/ubuntu/k8s/helm/app/values.yaml
+        path: /home/ubuntu/to-do-app/k8s/helm/app/values.yaml
         regexp: '^ *tag:.*'
         line: 'tag: "{{ build_number }}"'  # Update with the new build number
       when: build_number is defined
