@@ -1,17 +1,22 @@
----
 - name: "Build Docker images with Ansible"
   hosts: app_servers
   become: true
   vars:
     docker_username: "{{ lookup('env', 'DOCKER_USERNAME') }}"
     docker_password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
-    build_number: "{{ build_number }}"  # Use the build_number variable
+    build_number: "{{ build_number }}"
 
   tasks:
+    - name: Ensure Docker is running
+      service:
+        name: docker
+        state: started
+
     - name: Clone repo
-      command: git clone https://github.com/sharara99/to-do-app.git
-      args:
-        chdir: /home/ubuntu
+      git:
+        repo: https://github.com/sharara99/to-do-app.git
+        dest: /home/ubuntu/to-do-app
+        version: main
       ignore_errors: yes
 
     - name: Log in to Docker
@@ -31,8 +36,13 @@
       lineinfile:
         path: /home/ubuntu/to-do-app/k8s/helm/app/values.yaml
         regexp: '^ *tag:.*'
-        line: 'tag: "{{ build_number }}"'  # Update with the new build number
+        line: 'tag: "{{ build_number }}"'
       when: build_number is defined
+
+    - name: Lint the Helm chart
+      command: helm lint /home/ubuntu/to-do-app/k8s/helm/app
+      register: lint_result
+      failed_when: lint_result.rc != 0
 
     - name: Commit and push changes to GitHub
       command: |
