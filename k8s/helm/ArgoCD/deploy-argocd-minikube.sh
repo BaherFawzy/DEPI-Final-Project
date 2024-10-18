@@ -24,3 +24,4 @@ minikube service -n argocd argocd-server --url
 echo "--------------------ArgoCD UI Password--------------------"
 echo "Username: admin"
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d > argo-pass.txt
+cat argo-pass.txt
