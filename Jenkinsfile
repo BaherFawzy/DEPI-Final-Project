@@ -68,8 +68,53 @@ pipeline {
                             echo "Directory k8s/helm/ArgoCD does not exist!"
                             exit 1
                         fi
-                        cat argo-pass.txt
-                                              
+                    '''
+                }
+            }
+        }
+
+        stage('Create ArgoCD Application') {
+            steps {
+                script {
+                    echo "Creating ArgoCD Application..."
+
+                    sh '''
+                        # Set ArgoCD app name and repo details
+                        ARGOCD_APP_NAME="to-do-app"
+                        ARGOCD_REPO_URL="https://github.com/sharara99/DEPI-Final-Project.git"
+                        ARGOCD_PATH="k8s/helm/app"
+                        ARGOCD_NAMESPACE="to-do-app"
+                        ARGOCD_CLUSTER="https://kubernetes.default.svc"
+
+                        # Read ArgoCD admin password from the file created by the deploy-argocd-minikube.sh script
+                        if [ ! -f argo-pass.txt ]; then
+                            echo "ArgoCD password file not found!"
+                            exit 1
+                        fi
+
+                        ARGOCD_PASSWORD=$(cat argo-pass.txt)
+
+                        # Login to ArgoCD using the extracted password
+                        argocd login --insecure --username admin --password $ARGOCD_PASSWORD --grpc-web argocd-server:443
+
+                        # Check if ArgoCD application already exists
+                        if argocd app get $ARGOCD_APP_NAME; then
+                            echo "Application $ARGOCD_APP_NAME already exists, syncing..."
+                            argocd app sync $ARGOCD_APP_NAME
+                        else
+                            echo "Creating ArgoCD application $ARGOCD_APP_NAME..."
+                            argocd app create $ARGOCD_APP_NAME \
+                                --repo $ARGOCD_REPO_URL \
+                                --path $ARGOCD_PATH \
+                                --dest-server $ARGOCD_CLUSTER \
+                                --dest-namespace $ARGOCD_NAMESPACE \
+                                --sync-policy automated \
+                                --auto-prune \
+                                --self-heal
+
+                            # Sync the ArgoCD application
+                            argocd app sync $ARGOCD_APP_NAME
+                        fi
                     '''
                 }
             }
