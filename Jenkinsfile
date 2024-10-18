@@ -81,8 +81,15 @@ pipeline {
                         # Directly apply the ArgoCD application manifest
                         kubectl apply -f k8s/helm/ArgoCD/argocd-app.yaml
 
+                        # Get ArgoCD server URL
+                        ARGOCD_SERVER_URLS=($(minikube service -n argocd argocd-server --url))
+                        ARGOCD_SERVER_URL=${ARGOCD_SERVER_URLS[0]}  # Choose the first URL
+
+                        # Login to ArgoCD
+                        argocd login --insecure --username admin --password $(cat argo-pass.txt) --grpc-web $ARGOCD_SERVER_URL
+
                         # Sync the ArgoCD application
-                        argocd app sync to-do-app
+                        argocd app sync to-do-app --server $ARGOCD_SERVER_URL
                     '''
                 }
             }
