@@ -45,18 +45,20 @@ pipeline {
             }
         }
 
-        stage('Build and Push Docker Image') {
+        stage('Build and Push Docker Image And Github') {
             steps {
                 script {
                     // Login to Docker Hub and build/push the Docker image
-                    withCredentials([
-                        usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME'),
-                        usernamePassword(credentialsId: 'GitHub', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USERNAME') // Added GitHub credentials
-                    ]) {
+                    withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                         sh '''
                             docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
-                            # You can use GITHUB_USERNAME and GITHUB_TOKEN here if needed
+
                         '''
+                    }
+
+                    withCredentials([usernamePassword(credentialsId: 'GitHub', passwordVariable: 'pass', usernameVariable: 'user')]) {
+                            git config --global user.email "mahmoodshrara@gmail.com"
+                            git config --global user.name "Mahmoud Sharara"
                     }
                 }
             }

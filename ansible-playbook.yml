@@ -1,22 +1,17 @@
+---
 - name: "Build Docker images with Ansible"
   hosts: app_servers
   become: true
   vars:
     docker_username: "{{ lookup('env', 'DOCKER_USERNAME') }}"
     docker_password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
-    build_number: "{{ build_number }}"
+    build_number: "{{ build_number }}"  # Use the build_number variable
 
   tasks:
-    - name: Ensure Docker is running
-      service:
-        name: docker
-        state: started
-
     - name: Clone repo
-      git:
-        repo: https://github.com/sharara99/to-do-app.git
-        dest: /home/ubuntu/to-do-app
-        version: main
+      command: git clone https://github.com/sharara99/to-do-app.git
+      args:
+        chdir: /home/ubuntu
       ignore_errors: yes
 
     - name: Log in to Docker
