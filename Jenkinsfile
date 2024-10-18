@@ -94,8 +94,14 @@ pipeline {
 
                         ARGOCD_PASSWORD=$(cat argo-pass.txt)
 
+                        # Get the ArgoCD server URLs
+                        ARGOCD_SERVER_URLS=($(minikube service -n argocd argocd-server --url))
+
+                        # Select one of the URLs (here we simply choose the first one)
+                        ARGOCD_SERVER_URL=${ARGOCD_SERVER_URLS[0]}  # or use ${ARGOCD_SERVER_URLS[1]} for the second URL
+
                         # Login to ArgoCD using the extracted password
-                        argocd login --insecure --username admin --password $ARGOCD_PASSWORD --grpc-web argocd-server:443
+                        argocd login --insecure --username admin --password $ARGOCD_PASSWORD --grpc-web $ARGOCD_SERVER_URL
 
                         # Check if ArgoCD application already exists
                         if argocd app get $ARGOCD_APP_NAME; then
