@@ -33,11 +33,13 @@ pipeline {
         stage('Ansible for Configuration and Management') {
             steps {
                 script {
-                    sh '''
-                        ls -la  # Check contents of the Ansible main directory
-                        ansible --version
-                        ansible-playbook -i inventory.ini ansible-playbook.yml -e build_number=${BUILD_NUMBER}
-                    '''
+                    withCredentials([usernamePassword(credentialsId: 'GitHub', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_TOKEN')]) {
+                        sh '''
+                            ls -la  # Check contents of the Ansible main directory
+                            ansible --version
+                            ansible-playbook -i inventory.ini ansible-playbook.yml -e build_number=${BUILD_NUMBER}
+                        '''
+                    }
                 }
             }
         }
@@ -78,7 +80,6 @@ pipeline {
                 script {
                     echo "Creating ArgoCD Application..."
                     sh '''
-   
                         # Apply the ArgoCD application configuration
                         cd k8s/helm/ArgoCD
                         kubectl apply -f argocd-app.yaml

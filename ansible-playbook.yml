@@ -6,6 +6,9 @@
     docker_username: "{{ lookup('env', 'DOCKER_USERNAME') }}"
     docker_password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
     build_number: "{{ build_number }}"  # Use the build_number variable
+    github_username: "{{ lookup('env', 'GITHUB_USERNAME') }}"
+    github_token: "{{ lookup('env', 'GITHUB_TOKEN') }}"
+    repo_path: "/home/ubuntu/to-do-app"
 
   tasks:
     - name: Clone repo
@@ -19,10 +22,34 @@
         username: "{{ docker_username }}"
         password: "{{ docker_password }}"
 
+    - name: Update values.yaml with build number
+      lineinfile:
+        path: "{{ repo_path }}/values.yaml"
+        regexp: '^(.*image:.*:)(.*)$'
+        line: '\1{{ build_number }}'
+      when: build_number is defined
+
+    - name: Stage changes in Git
+      command: git add values.yaml
+      args:
+        chdir: "{{ repo_path }}"
+
+    - name: Commit changes to Git
+      command: git commit -m "Update values.yaml with build number {{ build_number }}"
+      args:
+        chdir: "{{ repo_path }}"
+      ignore_errors: yes
+
+    - name: Push changes to GitHub
+      command: git push https://{{ github_username }}:{{ github_token }}@github.com/sharara99/to-do-app.git
+      args:
+        chdir: "{{ repo_path }}"
+      ignore_errors: yes
+
     - name: Build and push Docker images
       shell: |
-        docker build -t sharara99/to-do-app:{{ build_number }} . 
+        docker build -t sharara99/to-do-app:{{ build_number }} .
         docker push sharara99/to-do-app:{{ build_number }}
       args:
-        chdir: /home/ubuntu/to-do-app
+        chdir: "{{ repo_path }}"
       ignore_errors: yes
