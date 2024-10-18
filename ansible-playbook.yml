@@ -37,7 +37,10 @@
       when: build_number is defined
 
     - name: Stage changes in Git
-      command: git add values.yaml
+      shell: | 
+        git config --global user.name "Mahmoud Sharara"
+        git config --global user.email "mahmoodsharara@gmail.com"
+        git add values.yaml
       args:
         chdir: /home/ubuntu/to-do-app/k8s/helm/app
 
