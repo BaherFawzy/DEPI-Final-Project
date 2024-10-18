@@ -30,20 +30,6 @@ pipeline {
             }
         }
 
-        stage('Ansible for Configuration and Management') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'GitHub', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_TOKEN')]) {
-                        sh '''
-                            ls -la  # Check contents of the Ansible main directory
-                            ansible --version
-                            ansible-playbook -i inventory.ini ansible-playbook.yml -e build_number=${BUILD_NUMBER}
-                        '''
-                    }
-                }
-            }
-        }
-
         stage('Build and Push Docker Image') {
             steps {
                 script {
@@ -51,6 +37,30 @@ pipeline {
                         sh '''
                             docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
                             ansible-playbook -i inventory.ini ansible-playbook.yml -e build_number=${BUILD_NUMBER}
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Update Helm Values and Push to GitHub') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'GitHub', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_TOKEN')]) {
+                        sh '''
+                            echo "Updating values.yaml with the build number..."
+                            sed -i "s/^ *tag:.*/tag: '${BUILD_NUMBER}'/" /home/ubuntu/to-do-app/k8s/helm/app/values.yaml
+
+                            echo "Staging changes in Git..."
+                            git config --global user.name "Mahmoud Sharara"
+                            git config --global user.email "mahmoodsharara@gmail.com"
+                            git add /home/ubuntu/to-do-app/k8s/helm/app/values.yaml
+
+                            echo "Committing changes to Git..."
+                            git commit -m "Update values.yaml with build number ${BUILD_NUMBER}" || echo "No changes to commit."
+
+                            echo "Pushing changes to GitHub..."
+                            git push https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/sharara99/to-do-app.git
                         '''
                     }
                 }
