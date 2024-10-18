@@ -51,7 +51,7 @@ pipeline {
                     // Login to Docker Hub and build/push the Docker image
                     withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                         sh '''
-                            docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} || exit 1
+                            docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
                         '''
                     }
 
