@@ -82,8 +82,6 @@ pipeline {
                         cd k8s/helm/ArgoCD
                         kubectl apply -f argocd-app.yaml
 
-                        # Rollout the update with the new image tag
-                        kubectl rollout restart deployment to-do-app-helm -n to-do-app
                     '''
                 }
             }
