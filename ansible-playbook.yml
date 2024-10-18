@@ -1,22 +1,32 @@
----
 - name: "Build Docker images with Ansible"
   hosts: app_servers
   become: true
   vars:
     docker_username: "{{ lookup('env', 'DOCKER_USERNAME') }}"
     docker_password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
-    build_number: "{{ build_number }}"  # Use the build_number variable
+    build_number: "{{ build_number }}"
     github_email: "mahmoodshrara@gmail.com"
     github_username: "{{ lookup('env', 'GITHUB_USERNAME') }}"
     github_token: "{{ lookup('env', 'GITHUB_TOKEN') }}"
 
   tasks:
+    - name: Reset repo to latest state
+      command: git reset --hard
+      args:
+        chdir: /home/ubuntu/to-do-app
+      ignore_errors: yes
+
     - name: Clone repo
       git:
         repo: https://github.com/sharara99/to-do-app.git
         dest: /home/ubuntu/to-do-app
-        version: main  # Specify branch if needed
+        version: main
       ignore_errors: yes
+
+    - name: Ensure app directory exists
+      file:
+        path: /home/ubuntu/to-do-app
+        state: directory
 
     - name: Log in to Docker
       docker_login:
