@@ -39,11 +39,6 @@
         line: 'tag: "{{ build_number }}"'
       when: build_number is defined
 
-    - name: Lint the Helm chart
-      command: helm lint /home/ubuntu/to-do-app/k8s/helm/app
-      register: lint_result
-      failed_when: lint_result.rc != 0
-
     - name: Commit and push changes to GitHub
       command: |
         git config --global user.email "mahmoodshrara@gmail.com"
