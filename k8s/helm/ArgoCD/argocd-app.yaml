@@ -12,9 +12,13 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: to-do-app
-  syncPolicy: 
-    syncOptions: 
+  syncPolicy:
+    syncOptions:
       - CreateNamespace=true
-    automated: 
-      selfHeal: true 
+    automated:
+      selfHeal: true
       prune: true
+  helm:
+    parameters:
+      - name: image.tag
+        value: "${BUILD_NUMBER}"  # Use a placeholder for the image tag
