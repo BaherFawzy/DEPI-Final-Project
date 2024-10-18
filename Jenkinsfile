@@ -94,6 +94,8 @@ pipeline {
                         # Perform a rolling update for the specific deployment
                         kubectl rollout restart deployment to-do-app-deployment -n to-do-app
 
+                        # Update the Kubernetes deployment with the new Docker image (rolling update)
+                        kubectl set image deployment/to-do-app-deployment to-do-app-container=sharara99/to-do-app:${BUILD_NUMBER} --record -n to-do-app
 
                     '''
                 }
