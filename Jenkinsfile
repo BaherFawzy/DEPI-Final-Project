@@ -78,8 +78,8 @@ pipeline {
                 script {
                     echo "Creating ArgoCD Application..."
                     sh '''
-                        # Replace the placeholder with the actual build number in the argocd-app.yaml file
-                        sed -i "s/\${BUILD_NUMBER}/$BUILD_NUMBER/g" k8s/helm/ArgoCD/argocd-app.yaml
+                        # Replace the placeholder in values.yaml with the actual build number
+                        sed -i "s/tag: latest/tag: ${BUILD_NUMBER}/g" k8s/helm/app/values.yaml
                         
                         # Apply the ArgoCD application configuration
                         cd k8s/helm/ArgoCD
