@@ -29,11 +29,11 @@
         chdir: /home/ubuntu/to-do-app
       ignore_errors: yes
 
-    - name: Update values.yaml with build number
+    - name: Update the build number in values.yaml
       lineinfile:
-        path: "/home/ubuntu/to-do-app/k8s/helm/app/values.yaml"
-        regexp: '^(.*image:.*:)(.*)$'
-        line: '\1{{ build_number }}'
+        path: /home/ubuntu/to-do-app/k8s/helm/app/values.yaml
+        regexp: '^ *tag:.*'
+        line: 'tag: "{{ build_number }}"'
       when: build_number is defined
 
     - name: Stage changes in Git
