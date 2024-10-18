@@ -16,7 +16,7 @@ pipeline {
                     sh '''
                         cd terraform
                         terraform init
-                        terraform plan -out=tfplan
+                        terraform plan -out=tfplan 
 
                         # Check if there are changes to be applied
                         if terraform show -json tfplan | jq .resource_changes | grep -q '"change"'; then
@@ -69,7 +69,22 @@ pipeline {
                             exit 1
                         fi
                         cat argo-pass.txt
-                                              
+                    '''
+                }
+            }
+        }
+
+        stage('Create ArgoCD Application') {
+            steps {
+                script {
+                    echo "Creating ArgoCD application..."
+                    sh '''
+                        argocd login --insecure --username admin --password $(cat argo-pass.txt)
+                        argocd app create to-do-app --repo https://github.com/sharara99/DEPI-Final-Project.git \
+                            --path k8s/helm/app \
+                            --dest-namespace to-do-app \
+                            --dest-server https://kubernetes.default.svc \
+                            --sync-policy automated
                     '''
                 }
             }
