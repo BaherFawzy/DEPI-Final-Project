@@ -81,7 +81,9 @@ pipeline {
    
                         # Apply the ArgoCD application configuration
                         cd k8s/helm/ArgoCD
+                        sed -i "s/tag: .*/tag: ${BUILD_NUMBER}/" k8s/helm/app/values.yaml
                         kubectl apply -f argocd-app.yaml
+                        
                     '''
                 }
             }
