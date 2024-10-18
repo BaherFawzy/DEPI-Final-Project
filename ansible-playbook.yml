@@ -9,7 +9,7 @@
 
   tasks:
     - name: Clone repo
-      command: git clone https://github.com/abohmeed/getting-started-app.git
+      command: git clone https://github.com/sharara99/to-do-app.git
       args:
         chdir: /home/ubuntu
       ignore_errors: yes
