@@ -90,6 +90,11 @@ pipeline {
                         # Apply the ArgoCD application configuration
                         cd k8s/helm/ArgoCD
                         kubectl apply -f argocd-app.yaml
+
+                        # Perform a rolling update for the specific deployment
+                        kubectl rollout restart deployment to-do-app-deployment
+
+                        
                     '''
                 }
             }
