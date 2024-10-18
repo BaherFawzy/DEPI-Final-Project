@@ -84,10 +84,12 @@ pipeline {
                     // Update the ArgoCD application configuration with the build number
                     echo "Creating ArgoCD Application..."
                     sh '''
+                        ls -la
                         # Update values.yaml with the build number
                         sed -i "s/tag: \\"latest\\"/tag: \\"${BUILD_NUMBER}\\"/" k8s/helm/app/values.yaml
                         
                         # Apply the ArgoCD application configuration
+                        ls -la
                         cd k8s/helm/ArgoCD
                         kubectl apply -f argocd-app.yaml
 
