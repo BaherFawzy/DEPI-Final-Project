@@ -21,8 +21,26 @@
 
     - name: Build and push Docker images
       shell: |
-        docker build -t sharara99/to-do-app:{{ build_number }} . 
+        docker build -t sharara99/to-do-app:{{ build_number }} .
         docker push sharara99/to-do-app:{{ build_number }}
       args:
         chdir: /home/ubuntu/getting-started-app
+      ignore_errors: yes
+
+    - name: Update the build number in values.yaml
+      lineinfile:
+        path: /home/ubuntu/k8s/helm/app/values.yaml
+        regexp: '^ *tag:.*'
+        line: 'tag: "{{ build_number }}"'  # Update with the new build number
+      when: build_number is defined
+
+    - name: Commit and push changes to GitHub
+      command: |
+        git config --global user.email "mahmoodshrara@gmail.com"
+        git config --global user.name "Mahmoud Sharara"
+        git add k8s/helm/app/values.yaml
+        git commit -m "Update build number to {{ build_number }}"
+        git push https://{{ lookup('env', 'GITHUB_USERNAME') }}:{{ lookup('env', 'GITHUB_TOKEN') }}@github.com/sharara99/to-do-app.git HEAD:main
+      args:
+        chdir: /home/ubuntu/to-do-app
       ignore_errors: yes

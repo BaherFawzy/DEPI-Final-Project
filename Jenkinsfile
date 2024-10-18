@@ -49,10 +49,13 @@ pipeline {
             steps {
                 script {
                     // Login to Docker Hub and build/push the Docker image
-                    withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                    withCredentials([
+                        usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME'),
+                        usernamePassword(credentialsId: 'Github', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USERNAME') // Added GitHub credentials
+                    ]) {
                         sh '''
                             docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
-
+                            # You can use GITHUB_USERNAME and GITHUB_TOKEN here if needed
                         '''
                     }
                 }
@@ -90,7 +93,6 @@ pipeline {
                         # Apply the ArgoCD application configuration
                         cd k8s/helm/ArgoCD
                         kubectl apply -f argocd-app.yaml
-
                     '''
                 }
             }
