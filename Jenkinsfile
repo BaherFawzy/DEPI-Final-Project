@@ -5,6 +5,7 @@ pipeline {
         stage('Setup') {
             steps {
                 script {
+                    echo "Cloning the repository..."
                     git branch: 'main', credentialsId: 'Github', url: 'https://github.com/sharara99/DEPI-Final-Project.git'
                 }
             }
@@ -13,6 +14,7 @@ pipeline {
         stage('Build Infrastructure') {
             steps {
                 script {
+                    echo "Initializing and planning Terraform..."
                     sh '''
                         cd terraform
                         terraform init
@@ -33,6 +35,7 @@ pipeline {
         stage('Ansible for Configuration and Management') {
             steps {
                 script {
+                    echo "Running Ansible playbook for configuration..."
                     sh '''
                         ls -la  # Check contents of the Ansible main directory
                         ansible --version
@@ -45,10 +48,12 @@ pipeline {
         stage('Build and Push Docker Image') {
             steps {
                 script {
+                    echo "Building and pushing Docker image..."
                     withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                         sh '''
                             docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
-                            ansible-playbook -i inventory.ini ansible-playbook.yml -e build_number=${BUILD_NUMBER}
+                            docker build -t sharara99/to-do-app:${BUILD_NUMBER} .
+                            docker push sharara99/to-do-app:${BUILD_NUMBER}
                         '''
                     }
                 }
@@ -60,7 +65,6 @@ pipeline {
                 script {
                     echo "Deploying ArgoCD using Helm..."
                     sh '''
-                        ls -la
                         if [ -d "k8s/helm/ArgoCD" ]; then
                             cd k8s/helm/ArgoCD
                             ./deploy-argocd-minikube.sh
@@ -78,13 +82,12 @@ pipeline {
                 script {
                     echo "Creating ArgoCD Application..."
                     sh '''
-                        # Update argocd-app.yaml with the build number
-                        sed -i 's/tag: "latest"/tag: ${BUILD_NUMBER}/' k8s/helm/app/values.yaml
+                        # Update values.yaml with the build number
+                        sed -i "s/tag: \"latest\"/tag: ${BUILD_NUMBER}/" k8s/helm/app/values.yaml
 
                         # Apply the ArgoCD application configuration
                         cd k8s/helm/ArgoCD
                         kubectl apply -f argocd-app.yaml
-
                     '''
                 }
             }
