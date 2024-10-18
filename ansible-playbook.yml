@@ -24,7 +24,7 @@
         docker build -t sharara99/to-do-app:{{ build_number }} .
         docker push sharara99/to-do-app:{{ build_number }}
       args:
-        chdir: /home/ubuntu/getting-started-app
+        chdir: /home/ubuntu/to-do-app
       ignore_errors: yes
 
     - name: Update the build number in values.yaml
