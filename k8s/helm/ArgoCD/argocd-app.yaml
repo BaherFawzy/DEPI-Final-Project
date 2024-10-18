@@ -9,10 +9,6 @@ spec:
     repoURL: https://github.com/sharara99/DEPI-Final-Project.git
     targetRevision: HEAD
     path: k8s/helm/app
-    helm:  # Add Helm configuration here
-      parameters:
-        - name: image.tag
-          value: "${BUILD_NUMBER}"  # Placeholder for the image tag
   destination:
     server: https://kubernetes.default.svc
     namespace: to-do-app
