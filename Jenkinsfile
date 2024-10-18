@@ -43,7 +43,6 @@ pipeline {
             }
         }
 
-
         stage('Deploy ArgoCD with Helm') {
             steps {
                 script {
