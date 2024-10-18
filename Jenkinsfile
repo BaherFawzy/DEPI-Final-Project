@@ -86,7 +86,7 @@ pipeline {
                         kubectl rollout status deployment/to-do-app-helm -n to-do-app
 
                         # Update the Kubernetes deployment with the new Docker image (rolling update)
-                        kubectl set image deployment/to-do-app-helm to-do-app=sharara99/to-do-app:${BUILD_NUMBER} --record -n to-do-app
+                        kubectl set image deployment/to-do-app-helm to-do-app-helm=sharara99/to-do-app:${BUILD_NUMBER} --record -n to-do-app
                     '''
                 }
             }
