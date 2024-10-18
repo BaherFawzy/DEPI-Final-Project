@@ -51,14 +51,17 @@ pipeline {
                     // Login to Docker Hub and build/push the Docker image
                     withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                         sh '''
-                            docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
-
+                            docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} || exit 1
                         '''
                     }
 
-                    withCredentials([usernamePassword(credentialsId: 'GitHub', passwordVariable: 'pass', usernameVariable: 'user')]) {
+                    // Configure Git for committing the updated values.yaml
+                    withCredentials([usernamePassword(credentialsId: 'GitHub', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USERNAME')]) {
+                        sh '''
                             git config --global user.email "mahmoodshrara@gmail.com"
                             git config --global user.name "Mahmoud Sharara"
+
+                        '''
                     }
                 }
             }
@@ -73,7 +76,7 @@ pipeline {
                         ls -la
                         if [ -d "k8s/helm/ArgoCD" ]; then
                             cd k8s/helm/ArgoCD
-                            ./deploy-argocd-minikube.sh
+                            ./deploy-argocd-minikube.sh || exit 1
                         else
                             echo "Directory k8s/helm/ArgoCD does not exist!"
                             exit 1
@@ -94,7 +97,7 @@ pipeline {
                         
                         # Apply the ArgoCD application configuration
                         cd k8s/helm/ArgoCD
-                        kubectl apply -f argocd-app.yaml
+                        kubectl apply -f argocd-app.yaml || exit 1
                     '''
                 }
             }

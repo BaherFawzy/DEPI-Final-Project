@@ -6,12 +6,16 @@
     docker_username: "{{ lookup('env', 'DOCKER_USERNAME') }}"
     docker_password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
     build_number: "{{ build_number }}"  # Use the build_number variable
+    github_email: "mahmoodshrara@gmail.com"
+    github_username: "{{ lookup('env', 'GITHUB_USERNAME') }}"
+    github_token: "{{ lookup('env', 'GITHUB_TOKEN') }}"
 
   tasks:
     - name: Clone repo
-      command: git clone https://github.com/sharara99/to-do-app.git
-      args:
-        chdir: /home/ubuntu
+      git:
+        repo: https://github.com/sharara99/to-do-app.git
+        dest: /home/ubuntu/to-do-app
+        version: main  # Specify branch if needed
       ignore_errors: yes
 
     - name: Log in to Docker
@@ -19,19 +23,18 @@
         username: "{{ docker_username }}"
         password: "{{ docker_password }}"
 
-    - name: Build Docker images
-      shell: |
-        docker build -t sharara99/to-do-app:{{ build_number }} .
-      args:
-        chdir: /home/ubuntu/to-do-app
-      ignore_errors: yes
+    - name: Build Docker image
+      docker_image:
+        name: sharara99/to-do-app
+        tag: "{{ build_number }}"
+        path: /home/ubuntu/to-do-app
+        state: present
 
-    - name: push Docker images
-      shell: |
-        docker push sharara99/to-do-app:{{ build_number }}
-      args:
-        chdir: /home/ubuntu/to-do-app
-      ignore_errors: yes
+    - name: Push Docker image
+      docker_image:
+        name: sharara99/to-do-app
+        tag: "{{ build_number }}"
+        push: yes
 
     - name: Update the build number in values.yaml
       lineinfile:
@@ -41,12 +44,12 @@
       when: build_number is defined
 
     - name: Commit and push changes to GitHub
-      command: |
-        git config --global user.email "mahmoodshrara@gmail.com"
-        git config --global user.name "Mahmoud Sharara"
-        git add k8s/helm/app/values.yaml
-        git commit -m "Update build number to {{ build_number }}"
-        git push https://{{ lookup('env', 'GITHUB_USERNAME') }}:{{ lookup('env', 'GITHUB_TOKEN') }}@github.com/sharara99/to-do-app.git HEAD:main
+      command: >
+        git config --global user.email "{{ github_email }}" &&
+        git config --global user.name "Mahmoud Sharara" &&
+        git add k8s/helm/app/values.yaml &&
+        git commit -m "Update build number to {{ build_number }}" &&
+        git push https://{{ github_username }}:{{ github_token }}@github.com/sharara99/to-do-app.git HEAD:main
       args:
         chdir: /home/ubuntu/to-do-app
       ignore_errors: yes
