@@ -4,16 +4,15 @@
 echo "--------------------Create Argocd Namespace--------------------"
 kubectl create ns argocd || true
 
-# Deploy Argocd
+# Deploy ArgoCD
 echo "--------------------Deploy Argocd--------------------"
 # Check if ArgoCD components are already up-to-date or need to be applied
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml | grep -q 'unchanged'
-
-if [ $? -eq 0 ]; then
+if kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml | grep -q 'unchanged'; then
     echo "No changes detected in ArgoCD deployment. Skipping reapply."
 else
     echo "Changes detected in ArgoCD deployment. Reapplying..."
-    kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+    # Force reapply of ArgoCD components
+    kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml --force
 fi
 
 # Wait 1 minute for the pods to start
