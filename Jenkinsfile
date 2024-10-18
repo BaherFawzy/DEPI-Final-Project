@@ -5,7 +5,6 @@ pipeline {
         stage('Setup') {
             steps {
                 script {
-                    // Checkout the main branch from the GitHub repository
                     git branch: 'main', credentialsId: 'Github', url: 'https://github.com/sharara99/DEPI-Final-Project.git'
                 }
             }
@@ -14,13 +13,12 @@ pipeline {
         stage('Build Infrastructure') {
             steps {
                 script {
-                    // Initialize and apply Terraform configurations
                     sh '''
                         cd terraform
                         terraform init
                         terraform plan -out=tfplan
 
-                        # Check for changes before applying
+                        # Check if there are changes to be applied
                         if terraform show -json tfplan | jq .resource_changes | grep -q '"change"'; then
                             echo "Changes detected, applying infrastructure changes..."
                             terraform apply -auto-approve tfplan
@@ -35,9 +33,8 @@ pipeline {
         stage('Ansible for Configuration and Management') {
             steps {
                 script {
-                    // Run Ansible playbook for configuration management
                     sh '''
-                        ls -la  # List files in the Ansible directory for verification
+                        ls -la  # Check contents of the Ansible main directory
                         ansible --version
                         ansible-playbook -i inventory.ini ansible-playbook.yml -e build_number=${BUILD_NUMBER}
                     '''
@@ -45,22 +42,13 @@ pipeline {
             }
         }
 
-        stage('Build and Push Docker Image And Github') {
+        stage('Build and Push Docker Image') {
             steps {
                 script {
-                    // Login to Docker Hub and build/push the Docker image
                     withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                         sh '''
                             docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
-                        '''
-                    }
-
-                    // Configure Git for committing the updated values.yaml
-                    withCredentials([usernamePassword(credentialsId: 'GitHub', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USERNAME')]) {
-                        sh '''
-                            git config --global user.email "mahmoodshrara@gmail.com"
-                            git config --global user.name "Mahmoud Sharara"
-
+                            ansible-playbook -i inventory.ini ansible-playbook.yml -e build_number=${BUILD_NUMBER}
                         '''
                     }
                 }
@@ -70,13 +58,12 @@ pipeline {
         stage('Deploy ArgoCD with Helm') {
             steps {
                 script {
-                    // Deploy ArgoCD using Helm
                     echo "Deploying ArgoCD using Helm..."
                     sh '''
                         ls -la
                         if [ -d "k8s/helm/ArgoCD" ]; then
                             cd k8s/helm/ArgoCD
-                            ./deploy-argocd-minikube.sh || exit 1
+                            ./deploy-argocd-minikube.sh
                         else
                             echo "Directory k8s/helm/ArgoCD does not exist!"
                             exit 1
@@ -89,15 +76,12 @@ pipeline {
         stage('Create ArgoCD Application') {
             steps {
                 script {
-                    // Update the ArgoCD application configuration with the build number
                     echo "Creating ArgoCD Application..."
                     sh '''
-                        # Update values.yaml with the build number
-                        sed -i "s/tag: \\"latest\\"/tag: \\"${BUILD_NUMBER}\\"/" k8s/helm/app/values.yaml
-                        
+   
                         # Apply the ArgoCD application configuration
                         cd k8s/helm/ArgoCD
-                        kubectl apply -f argocd-app.yaml || exit 1
+                        kubectl apply -f argocd-app.yaml
                     '''
                 }
             }

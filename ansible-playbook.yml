@@ -19,9 +19,9 @@
         username: "{{ docker_username }}"
         password: "{{ docker_password }}"
 
-    - name: Build Docker images 
+    - name: Build and push Docker images
       shell: |
-        docker build -t sharara99/to-do-app:{{ build_number }} .      
+        docker build -t sharara99/to-do-app:{{ build_number }} . 
         docker push sharara99/to-do-app:{{ build_number }}
       args:
         chdir: /home/ubuntu/to-do-app
