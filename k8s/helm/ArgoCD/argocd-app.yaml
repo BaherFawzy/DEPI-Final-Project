@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: to-do-app
+  namespace: argocd  # Ensure this is the namespace where ArgoCD is deployed
+spec:
+  project: default  # You can define a specific project if needed
+  source:
+    repoURL: https://github.com/sharara99/DEPI-Final-Project.git  # Your repository URL
+    targetRevision: main  # The branch to deploy
+    path: k8s/helm/app  # The path within the repo where the Helm chart is located
+  destination:
+    server: https://kubernetes.default.svc  # Default Kubernetes API server
+    namespace: to-do-app  # The namespace where your application will be deployed
+  syncPolicy:
+    automated:
+      prune: true  # Automatically delete resources that are no longer defined in Git
+      selfHeal: true  # Automatically sync when there are changes in the cluster
