@@ -5,12 +5,15 @@ metadata:
   labels:
     {{- include "helm.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-  {{- end }}
+  replicas: {{ .Values.replicaCount }}  # Define number of replicas
   selector:
     matchLabels:
       {{- include "helm.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: RollingUpdate  # Use rolling update strategy
+    rollingUpdate:
+      maxUnavailable: 1  # Allow 1 pod to be unavailable during the update
+      maxSurge: 1        # Allow 1 additional pod during the update
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -19,22 +22,15 @@ spec:
       {{- end }}
       labels:
         {{- include "helm.labels" . | nindent 8 }}
-        {{- with .Values.podLabels }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "helm.serviceAccountName" . }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"  # Use specified image tag
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
