@@ -1,9 +1,11 @@
+# values.yaml
+
 # Number of replicas for your to-do-app
-replicaCount: 4  
+replicaCount: 4  
 
 # Container image details for the to-do-app
 image:
-  repository: sharara99/to-do-app    # Your image repository
+  repository: sharara99/to-do-app  # Your image repository
   pullPolicy: IfNotPresent           # Image pull policy
   tag: "latest"                      # Default tag, can be overridden during deployment
 
@@ -16,10 +18,10 @@ fullnameOverride: ""
 
 # Service Account configuration
 serviceAccount:
-  create: true                       # If true, a ServiceAccount will be created
+  create: true  # If true, a ServiceAccount will be created
   automount: true
   annotations: {}
-  name: ""                           # Leave blank to auto-generate service account name
+  name: ""      # Leave blank to auto-generate service account name
 
 # Pod annotations and labels
 podAnnotations: {}
@@ -31,8 +33,8 @@ securityContext: {}
 
 # Service configuration for to-do-app
 service:
-  type: NodePort                     # Changed to NodePort for accessibility
-  port: 3000                         # The port for the service
+  type: NodePort   # Changed to NodePort for accessibility
+  port: 3000       # The port for the service
 
 # Ingress configuration (if needed, enable this section)
 ingress:
@@ -74,3 +76,4 @@ volumeMounts: []
 nodeSelector: {}
 tolerations: []
 affinity: {}
+
