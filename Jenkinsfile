@@ -51,7 +51,7 @@ pipeline {
                     // Login to Docker Hub and build/push the Docker image
                     withCredentials([
                         usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME'),
-                        usernamePassword(credentialsId: 'Github', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USERNAME') // Added GitHub credentials
+                        usernamePassword(credentialsId: 'GitHub', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USERNAME') // Added GitHub credentials
                     ]) {
                         sh '''
                             docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
