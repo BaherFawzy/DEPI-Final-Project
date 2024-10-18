@@ -78,12 +78,15 @@ pipeline {
                 script {
                     echo "Creating ArgoCD Application..."
                     sh '''
-   
                         # Apply the ArgoCD application configuration
                         cd k8s/helm/ArgoCD
-                        sed -i "s/tag: .*/tag: ${BUILD_NUMBER}/" k8s/helm/app/values.yaml
                         kubectl apply -f argocd-app.yaml
-                        
+
+                        # Wait for the deployment to be ready
+                        kubectl rollout status deployment/to-do-app-helm -n to-do-app
+
+                        # Update the Kubernetes deployment with the new Docker image (rolling update)
+                        kubectl set image deployment/to-do-app-helm to-do-app=sharara99/to-do-app:${BUILD_NUMBER} --record -n to-do-app
                     '''
                 }
             }
