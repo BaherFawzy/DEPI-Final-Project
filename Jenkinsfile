@@ -77,13 +77,13 @@ pipeline {
             steps {
                 script {
                     echo "Creating ArgoCD Application..."
-                    sh '''
-                        # Replace the placeholder with the actual build number in the k8s/helm/app/values.yaml file
-                        sed -i "s/tag: .*/tag: ${BUILD_NUMBER}/" k8s/helm/app/values.yaml
-
+                    sh ''' 
                         # Apply the ArgoCD application configuration
                         cd k8s/helm/ArgoCD
                         kubectl apply -f argocd-app.yaml
+
+                        # Rollout the update with the new image tag
+                        kubectl rollout restart deployment to-do-app -n to-do-app
                     '''
                 }
             }
