@@ -5,8 +5,6 @@
   vars:
     docker_username: "{{ lookup('env', 'DOCKER_USERNAME') }}"
     docker_password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
-    github_username: "{{ lookup('env', 'GITHUB_USERNAME') }}"
-    github_token   : "{{ lookup('env', 'GITHUB_TOKEN') }}"
     build_number: "{{ build_number }}"  # Use the build_number variable
 
   tasks:

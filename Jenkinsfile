@@ -49,18 +49,18 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'GitHub', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_TOKEN')]) {
                         sh '''
                             echo "Updating values.yaml with the build number..."
-                            sed -i "s/^ *tag:.*/tag: '${BUILD_NUMBER}'/" /home/ubuntu/to-do-app/k8s/helm/app/values.yaml
+                            sed -i "s/^ *tag:.*/tag: '${BUILD_NUMBER}'/" /home/vm1/jenkins-slave/workspace/Final-Project/k8s/helm/app/values.yaml
 
                             echo "Staging changes in Git..."
                             git config --global user.name "Mahmoud Sharara"
                             git config --global user.email "mahmoodsharara@gmail.com"
-                            git add /home/ubuntu/to-do-app/k8s/helm/app/values.yaml
+                            git add /home/vm1/jenkins-slave/workspace/Final-Project/k8s/helm/app/values.yaml
 
                             echo "Committing changes to Git..."
                             git commit -m "Update values.yaml with build number ${BUILD_NUMBER}" || echo "No changes to commit."
 
                             echo "Pushing changes to GitHub..."
-                            git push https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/sharara99/to-do-app.git
+                            git push origin main
                         '''
                     }
                 }
