@@ -77,11 +77,11 @@ pipeline {
             steps {
                 script {
                     echo "Creating ArgoCD Application..."
-                    sh ''' 
+                    sh '''
+   
                         # Apply the ArgoCD application configuration
                         cd k8s/helm/ArgoCD
                         kubectl apply -f argocd-app.yaml
-
                     '''
                 }
             }
