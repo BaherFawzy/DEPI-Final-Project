@@ -87,7 +87,18 @@ pipeline {
                         # Update values.yaml with the build number
                         sed -i "s/tag: \\"latest\\"/tag: \\"${BUILD_NUMBER}\\"/" k8s/helm/app/values.yaml
 
+                    '''
 
+                    sh '''
+                        # Apply the ArgoCD application configuration
+                        cd k8s/helm/ArgoCD
+                        kubectl apply -f argocd-app.yaml
+                        
+                        # Perform a rolling update for the specific deployment
+                        kubectl rollout restart deployment to-do-app-deployment -n to-do-app
+
+                        # Update the Kubernetes deployment with the new Docker image (rolling update)
+                        kubectl set image deployment/to-do-app-deployment to-do-app-container=sharara99/to-do-app:${BUILD_NUMBER} --record -n to-do-app
                     '''
                 }
             }
