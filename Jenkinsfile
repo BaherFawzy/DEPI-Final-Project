@@ -48,7 +48,7 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                         sh '''
                             docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
-                            ansible-playbook -i /home/vm1/jenkins-slave/workspace/Final-Project/inventory.ini ansible-playbook.yml -e build_number=${BUILD_NUMBER}
+                            ansible-playbook -i inventory.ini ansible-playbook.yml -e build_number=${BUILD_NUMBER}
                         '''
                     }
                 }
@@ -78,9 +78,12 @@ pipeline {
                 script {
                     echo "Creating ArgoCD Application..."
                     sh '''
-                       cd k8s/helm/ArgoCD
-                       kubectl apply -f argocd-app.yaml
-
+                        # Replace the placeholder with the actual build number in the argocd-app.yaml file
+                        sed -i "s/\${BUILD_NUMBER}/$BUILD_NUMBER/g" k8s/helm/ArgoCD/argocd-app.yaml
+                        
+                        # Apply the ArgoCD application configuration
+                        cd k8s/helm/ArgoCD
+                        kubectl apply -f argocd-app.yaml
                     '''
                 }
             }
