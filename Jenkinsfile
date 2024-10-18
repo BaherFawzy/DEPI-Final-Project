@@ -68,7 +68,20 @@ pipeline {
                             echo "Directory k8s/helm/ArgoCD does not exist!"
                             exit 1
                         fi
-                        cat argo-pass.txt
+                    '''
+                }
+            }
+        }
+
+        stage('Fetch ArgoCD Password') {
+            steps {
+                script {
+                    echo "Fetching ArgoCD admin password..."
+                    sh '''
+                        if [ ! -f argo-pass.txt ]; then
+                            echo "Fetching ArgoCD password from Kubernetes secret..."
+                            kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d > argo-pass.txt
+                        fi
                     '''
                 }
             }
