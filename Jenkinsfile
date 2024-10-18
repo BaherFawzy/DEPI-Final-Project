@@ -36,7 +36,7 @@ pipeline {
                     sh '''
                         ls -la  # Check contents of the Ansible main directory
                         ansible --version
-                        ansible-playbook -i inventory.ini ansible-playbook.yml
+                        ansible-playbook -i inventory.ini ansible-playbook.yml -e build_number=${BUILD_NUMBER}
                     '''
                 }
             }
@@ -78,9 +78,9 @@ pipeline {
                 script {
                     echo "Creating ArgoCD Application..."
                     sh '''
-                        # Replace the placeholder in values.yaml with the actual build number
-                        sed -i "s/tag: latest/tag: ${BUILD_NUMBER}/g" k8s/helm/app/values.yaml
-                        
+                        # Replace the placeholder with the actual build number in the k8s/helm/app/values.yaml file
+                        sed -i "s/tag: .*/tag: ${BUILD_NUMBER}/" k8s/helm/app/values.yaml
+
                         # Apply the ArgoCD application configuration
                         cd k8s/helm/ArgoCD
                         kubectl apply -f argocd-app.yaml
@@ -88,7 +88,6 @@ pipeline {
                 }
             }
         }
-
     }
 
     post {
