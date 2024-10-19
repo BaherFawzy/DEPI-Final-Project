@@ -61,7 +61,6 @@ pipeline {
             }
         }
 
-
         stage('Create ArgoCD Application') {
             steps {
                 script {
