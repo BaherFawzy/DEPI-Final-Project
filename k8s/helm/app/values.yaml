@@ -7,7 +7,7 @@ replicaCount: 4
 image:
   repository: sharara99/to-do-app    # Your image repository
   imagePullPolicy: Always  
-tag: 'latest'
+tag: '19'
 
 # Image pull secrets (if you use a private registry)
 imagePullSecrets: []
