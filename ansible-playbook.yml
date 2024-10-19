@@ -6,8 +6,6 @@
     docker_username: "{{ lookup('env', 'DOCKER_USERNAME') }}"
     docker_password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
     build_number: "{{ build_number }}"  # Use the build_number variable
-    github_username: "{{ lookup('env', 'GITHUB_USERNAME') }}"
-    github_token: "{{ lookup('env', 'GITHUB_TOKEN') }}"
     repo_path: "/home/ubuntu/to-do-app"  # Adjust this path as needed
 
   tasks:
@@ -29,38 +27,3 @@
       args:
         chdir: "{{ repo_path }}"
       ignore_errors: yes
-
-    - name: Update values.yaml with the build number
-      lineinfile:
-        path: "{{ repo_path }}/k8s/helm/app/values.yaml"
-        regexp: '^ *tag:'
-        line: "tag: '{{ build_number }}'"
-      notify:
-        - Commit and push changes
-
-    - name: Commit and push changes
-      block:
-        - name: Configure Git
-          shell: |
-            git config --global user.name "{{ github_username }}"
-            git config --global user.email "mahmoodsharara@gmail.com"
-          args:
-            chdir: "{{ repo_path }}"
-
-        - name: Stage changes in Git
-          shell: |
-            git add k8s/helm/app/values.yaml
-          args:
-            chdir: "{{ repo_path }}"
-
-        - name: Commit changes to Git
-          shell: |
-            git commit -m "Update values.yaml with build number {{ build_number }}" || echo "No changes to commit."
-          args:
-            chdir: "{{ repo_path }}"
-
-        - name: Push changes to GitHub
-          shell: |
-            git push https://{{ github_username }}:{{ github_token }}@github.com/sharara99/to-do-app.git main
-          args:
-            chdir: "{{ repo_path }}"
