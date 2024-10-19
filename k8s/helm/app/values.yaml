@@ -1,17 +1,11 @@
-# values.yaml
-
 # Number of replicas for your to-do-app
-replicaCount: 4  
+replicaCount: 4
 
 # Container image details for the to-do-app
 image:
-  repository: sharara99/to-do-app    # Your image repository
+  repository: sharara99/to-do-app  # Your image repository
   imagePullPolicy: Always  
-<<<<<<< HEAD
-tag: '22'
-=======
-tag: '22'
->>>>>>> f5493bf387305b784536a2f68aff598045fa5f3a
+  tag: "latest"  # Default tag, can be overridden during deployment
 
 # Image pull secrets (if you use a private registry)
 imagePullSecrets: []
@@ -25,7 +19,7 @@ serviceAccount:
   create: true  # If true, a ServiceAccount will be created
   automount: true
   annotations: {}
-  name: ""      # Leave blank to auto-generate service account name
+  name: ""  # Leave blank to auto-generate service account name
 
 # Pod annotations and labels
 podAnnotations: {}
@@ -37,8 +31,8 @@ securityContext: {}
 
 # Service configuration for to-do-app
 service:
-  type: NodePort   # Changed to NodePort for accessibility
-  port: 3000       # The port for the service
+  type: NodePort  # Changed to NodePort for accessibility
+  port: 3000  # The port for the service
 
 # Ingress configuration (if needed, enable this section)
 ingress:
@@ -56,10 +50,10 @@ ingress:
 resources:
   requests:
     memory: "256Mi"  # Minimum memory request
-    cpu: "500m"      # Minimum CPU request
+    cpu: "500m"  # Minimum CPU request
   limits:
     memory: "512Mi"  # Maximum memory limit
-    cpu: "1"         # Maximum CPU limit
+    cpu: "1"  # Maximum CPU limit
 
 # Liveness and readiness probes for to-do-app
 livenessProbe:
