@@ -8,9 +8,9 @@ image:
   repository: sharara99/to-do-app    # Your image repository
   imagePullPolicy: Always  
 <<<<<<< HEAD
-  tag: "latest"                      # Default tag, can be overridden during deployment
+tag: '22'
 =======
-tag: '21'
+tag: '22'
 >>>>>>> f5493bf387305b784536a2f68aff598045fa5f3a
 
 # Image pull secrets (if you use a private registry)
