@@ -72,8 +72,6 @@ pipeline {
                             sed -i "s/^ *tag:.*/tag: '${BUILD_NUMBER}'/" /home/vm1/jenkins-slave/workspace/Final-Project/to-do-app/k8s/helm/app/values.yaml
 
                             echo "Staging changes in Git..."
-                            git config --global user.name "Mahmoud Sharara"
-                            git config --global user.email "mahmoodsharara@gmail.com"
                             git add /home/vm1/jenkins-slave/workspace/Final-Project/to-do-app/k8s/helm/app/values.yaml
 
                             echo "Committing changes to Git..."
