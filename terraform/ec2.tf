@@ -33,7 +33,7 @@ resource "aws_instance" "ubuntu-instance" {
                   EOF
 
   tags = {
-    Name        = "Python-App-Server"
+    Name        = "To-Do-App-Server"
     Environment = var.Environment
     Owner       = var.Owner
   }
