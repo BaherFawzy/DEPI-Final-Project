@@ -61,30 +61,7 @@ pipeline {
             }
         }
 
-        stage('Update Helm Values and Push to GitHub') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'GitHub', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_TOKEN')]) {
-                        sh '''
-                            git clone https://github.com/sharara99/to-do-app.git
-                            cd to-do-app
 
-                            echo "Updating values.yaml with the build number..."
-                            sed -i "s/^ *tag:.*/tag: '${BUILD_NUMBER}'/" /home/vm1/jenkins-slave/workspace/Final-Project/to-do-app/k8s/helm/app/values.yaml
-
-                            echo "Staging changes in Git..."
-                            git add /home/vm1/jenkins-slave/workspace/Final-Project/to-do-app/k8s/helm/app/values.yaml
-
-                            echo "Committing changes to Git..."
-                            git commit -m "Update values.yaml with build number ${BUILD_NUMBER}" || echo "No changes to commit."
-
-                            echo "Pushing changes to GitHub..."
-                            git push origin main
-                        '''
-                    }
-                }
-            }
-        }
 
         stage('Create ArgoCD Application') {
             steps {

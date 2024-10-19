@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/sharara99/to-do-app.git
-    targetRevision: HEAD
+    targetRevision: main
     path: k8s/helm/app
   destination:
     server: https://kubernetes.default.svc
