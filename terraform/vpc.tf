@@ -22,3 +22,16 @@ resource "aws_subnet" "subnet_public_1" {
     Owner       = var.Owner
   }
 }
+
+resource "aws_subnet" "subnet_public_2" {
+  vpc_id                  = aws_vpc.main_vpc.id
+  cidr_block              = cidrsubnet(var.vpc_cidr, 32, 2)
+  availability_zone       = "us-east-1a"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name        = "subnet-public-2"
+    Environment = var.Environment
+    Owner       = var.Owner
+  }
+}
