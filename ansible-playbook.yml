@@ -24,7 +24,7 @@
       shell: |
         docker build -t sharara99/to-do-app:{{ build_number }} . 
         docker push sharara99/to-do-app:{{ build_number }}
-        docker run -d --name to-do-app-container -p 80:80 sharara99/to-do-app:${BUILD_NUMBER}
+        docker run -d --name to-do-app-container -p 80:80 sharara99/to-do-app:{{ build_number }}
       args:
         chdir: "{{ repo_path }}"
       ignore_errors: yes
