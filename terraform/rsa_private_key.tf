@@ -11,8 +11,8 @@ resource "aws_key_pair" "UbuntuKP" {
 
   provisioner "local-exec" {
     command = <<EOF
-    echo '${tls_private_key.pk.private_key_pem}' > /home/vm1/jenkins-slave/workspace/Final-Project/mykey.pem
-    chmod 400 /home/vm1/jenkins-slave/workspace/Final-Project/mykey.pem
+    echo '${tls_private_key.pk.private_key_pem}' > /home/sharara/learn/project/agent/workspace/project/mykey.pem
+    chmod 400 /home/sharara/learn/project/agent/mykey.pem
     EOF
   }
 }
