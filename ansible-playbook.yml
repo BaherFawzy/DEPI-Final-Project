@@ -6,7 +6,7 @@
     docker_username: "{{ lookup('env', 'DOCKER_USERNAME') }}"
     docker_password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
     build_number: "{{ build_number }}"  # Use the build_number variable
-    repo_path: "/home/ubuntu/to-do-app"  # Adjust this path as needed
+    repo_path: "/home/ubuntu/To-Do-List"  # Adjust this path as needed
 
   tasks:
     - name: Clone repo
