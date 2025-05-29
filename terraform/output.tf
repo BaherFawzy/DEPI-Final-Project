@@ -17,8 +17,8 @@ output "instance_public_dns" {
 resource "null_resource" "generate_inventory" {
   provisioner "local-exec" {
     command = <<EOF
-      echo "[app_servers]" > /home/sharara/agent/workspace/project/inventory.ini
-      echo "ec2-instance ansible_host=${aws_instance.ubuntu-instance.public_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/home/sharara/agent/workspace/project/workspace/Final-Project/mykey.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'" >> /home/sharara/agent/workspace/project/inventory.ini
+      echo "[app_servers]" > /home/sharara/learn/project/agent/workspace/project/inventory.ini
+      echo "ec2-instance ansible_host=${aws_instance.ubuntu-instance.public_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/home/sharara/learn/project/agent/workspace/project/mykey.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'" >> /home/sharara/agent/workspace/project/inventory.ini
 EOF
   }
 }
