@@ -22,9 +22,9 @@
 
     - name: Build and push Docker images
       shell: |
-        docker build -t sharara99/to-do-app:{{ build_number }} . 
-        docker push sharara99/to-do-app:{{ build_number }}
-        docker run -d --name to-do-app-container -p 80:80 sharara99/to-do-app:{{ build_number }}
+        docker build -t baher421/getting-started:{{ build_number }} . 
+        docker push baher421/getting-started:{{ build_number }}
+        docker run -d --name to-do-app-container -p 80:80 baher421/getting-started:{{ build_number }}
       args:
         chdir: "{{ repo_path }}"
       ignore_errors: yes
